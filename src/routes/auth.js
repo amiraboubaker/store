@@ -12,10 +12,10 @@ const { createAuthMiddleware } = require('../middleware/auth');
 /**
  * Create auth routes with User model
  */
-module.exports = (User) => {
+module.exports = (User, Product, Cart) => {
     const router = express.Router();
     const { authMiddleware } = createAuthMiddleware(User);
-    const authController = new AuthController(User);
+    const authController = new AuthController(User, Cart, Product);
 
     /**
      * Public Routes

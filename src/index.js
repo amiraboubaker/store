@@ -6,6 +6,7 @@ const { errorHandler, createAuthMiddleware } = require('./middleware/auth');
 const authRoutes = require('./routes/auth');
 const protectedRoutes = require('./routes/protected.example');
 const productRoutes = require('./routes/products');
+const cartRoutes = require('./routes/cart');
 
 const app = express();
 
@@ -31,20 +32,25 @@ app.use(express.urlencoded({ limit: '10kb', extended: true }));
 let sequelize;
 let User;
 let Product;
+let Cart;
 
 const initializeDatabase = async () => {
     try {
+        const isJest = process.env.JEST_WORKER_ID !== undefined;
+        const useSqlite = process.env.DB_DIALECT === 'sqlite' || process.env.NODE_ENV === 'test' || process.env.DB_HOST === 'sqlite' || (process.env.DB_NAME || '').includes('.sqlite') || !process.env.DB_HOST || isJest;
+
         // Create Sequelize instance
         sequelize = new Sequelize(
-            process.env.DB_NAME || 'couture_auth',
+            process.env.DB_NAME || (useSqlite ? 'database.sqlite' : 'couture_auth'),
             process.env.DB_USER || 'root',
             process.env.DB_PASSWORD || 'password',
             {
                 host: process.env.DB_HOST || 'localhost',
                 port: process.env.DB_PORT || 3306,
-                dialect: 'mysql',
+                dialect: useSqlite ? 'sqlite' : 'mysql',
+                storage: useSqlite ? (process.env.DB_STORAGE || 'database.sqlite') : undefined,
                 logging: false,
-                pool: {
+                pool: useSqlite ? undefined : {
                     max: 5,
                     min: 0,
                     acquire: 30000,
@@ -55,28 +61,40 @@ const initializeDatabase = async () => {
 
         // Test connection
         await sequelize.authenticate();
-        console.log('✓ MySQL database connected');
+        console.log(useSqlite ? '✓ SQLite database connected' : '✓ MySQL database connected');
 
         // Define models
         User = require('./models/User')(sequelize);
         Product = require('./models/Product')(sequelize);
+        Cart = require('./models/Cart')(sequelize);
+
+        if (User.associate) {
+            User.associate({ User, Product, Cart });
+        }
+        if (Product.associate) {
+            Product.associate({ User, Product, Cart });
+        }
+        if (Cart.associate) {
+            Cart.associate({ User, Product, Cart });
+        }
 
         // Sync database (create tables if they don't exist, and reconcile
         // existing tables with the models so missing columns/indexes are added)
-        await sequelize.sync({ alter: true });
+        const syncOptions = isJest ? { force: true } : { alter: true };
+        await sequelize.sync(syncOptions);
         console.log('✓ Database tables synced');
 
         return { sequelize, User };
     } catch (error) {
         console.error('✗ Database connection error:', error.message);
-        process.exit(1);
+        throw error;
     }
 };
 
 /**
  * Routes Setup (requires User model to be defined)
  */
-const setupRoutes = (User, Product) => {
+const setupRoutes = (User, Product, Cart) => {
     // Health Check
     app.get('/health', (req, res) => {
         res.status(200).json({
@@ -104,12 +122,13 @@ const setupRoutes = (User, Product) => {
     const { authMiddleware } = createAuthMiddleware(User);
 
     // Authentication Routes
-    app.use('/auth', authRoutes(User));
+    app.use('/auth', authRoutes(User, Product, Cart));
 
     // Protected Routes Example
     app.use('/admin', protectedRoutes(User));
     app.use('/customer', protectedRoutes(User));
     app.use('/products', productRoutes(User, Product));
+    app.use('/cart', cartRoutes(User, Product, Cart));
 
     /**
      * 404 Handler
@@ -137,10 +156,12 @@ const bootstrap = async () => {
     const { sequelize: db, User: UserModel } = await initializeDatabase();
     sequelize = db;
     User = UserModel;
+    Product = require('./models/Product')(sequelize);
+    Cart = require('./models/Cart')(sequelize);
 
-    setupRoutes(User, Product);
+    setupRoutes(User, Product, Cart);
 
-    return { app, User, sequelize };
+    return { app, User, Product, Cart, sequelize };
 };
 
 /**

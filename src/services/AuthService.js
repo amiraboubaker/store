@@ -2,8 +2,11 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
 class AuthService {
-    constructor(User) {
+    constructor(User, Cart, Product) {
         this.User = User;
+        this.Cart = Cart;
+        this.Product = Product;
+        this.cartService = Cart && Product ? new (require('./CartService'))(Cart, User, Product) : null;
     }
 
     /**
@@ -51,7 +54,7 @@ class AuthService {
     /**
      * Login user
      */
-    async login(email, password) {
+    async login(email, password, guestCart = []) {
         // Validate input
         if (!email || !password) {
             throw {
@@ -115,6 +118,9 @@ class AuthService {
         // Generate tokens
         const token = this.generateToken(user);
         const refreshToken = this.generateRefreshToken(user);
+        const cart = this.cartService
+            ? await this.cartService.mergeGuestCart(user.id, guestCart)
+            : null;
 
         return {
             user: {
@@ -125,7 +131,8 @@ class AuthService {
                 role: user.role
             },
             token,
-            refreshToken
+            refreshToken,
+            cart
         };
     }
 

@@ -1,9 +1,11 @@
 const AuthService = require('../services/AuthService');
 
 class AuthController {
-    constructor(User) {
+    constructor(User, Cart, Product) {
         this.User = User;
-        this.authService = new AuthService(User);
+        this.Cart = Cart;
+        this.Product = Product;
+        this.authService = new AuthService(User, Cart, Product);
     }
 
     /**
@@ -50,9 +52,9 @@ class AuthController {
      */
     async login(req, res, next) {
         try {
-            const { email, password } = req.body;
+            const { email, password, guestCart } = req.body;
 
-            const result = await this.authService.login(email, password);
+            const result = await this.authService.login(email, password, guestCart);
 
             res.status(200).json({
                 status: 'success',
@@ -61,7 +63,8 @@ class AuthController {
                 data: {
                     user: result.user,
                     token: result.token,
-                    refreshToken: result.refreshToken
+                    refreshToken: result.refreshToken,
+                    cart: result.cart
                 }
             });
         } catch (error) {
