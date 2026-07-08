@@ -1,18 +1,26 @@
-// src/tests/auth.test.example.js
-// Example Jest test suite for authentication
+// src/tests/auth.test.js
+// Jest test suite for authentication
 
 const request = require('supertest');
-const app = require('../index');
-const User = require('../models/User');
+const { app, bootstrap } = require('../index');
 
 describe('Authentication API', () => {
+    let User;
+    let sequelize;
+
     beforeAll(async () => {
-        // Connect to test database
-        // Clear test data
+        // Connect to database, register routes, and start from a clean slate
+        const bootstrapped = await bootstrap();
+        User = bootstrapped.User;
+        sequelize = bootstrapped.sequelize;
+        await User.destroy({ where: {} });
     });
 
     afterAll(async () => {
         // Clean up and close connection
+        if (sequelize) {
+            await sequelize.close();
+        }
     });
 
     describe('POST /auth/register', () => {
@@ -65,7 +73,7 @@ describe('Authentication API', () => {
                 .send({
                     firstName: 'John',
                     lastName: 'Doe',
-                    email: 'test@example.com',
+                    email: 'weakpass@example.com',
                     password: 'weak',
                     confirmPassword: 'weak'
                 });
@@ -81,7 +89,7 @@ describe('Authentication API', () => {
                 .send({
                     firstName: 'John',
                     lastName: 'Doe',
-                    email: 'test@example.com',
+                    email: 'mismatch@example.com',
                     password: 'SecurePass123!',
                     confirmPassword: 'DifferentPass123!'
                 });
@@ -185,7 +193,7 @@ describe('Authentication API', () => {
     describe('GET /auth/me', () => {
         let token;
 
-        beforeEach(async () => {
+        beforeAll(async () => {
             const res = await request(app)
                 .post('/auth/register')
                 .send({
@@ -250,7 +258,7 @@ describe('Authentication API', () => {
             expect(res.statusCode).toBe(200);
             expect(res.body.status).toBe('success');
             // In development, resetToken should be included
-            if (process.env.NODE_ENV === 'development') {
+            if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
                 expect(res.body.data.resetToken).toBeDefined();
             }
         });
@@ -290,7 +298,7 @@ describe('Authentication API', () => {
                     email: 'resetpass@example.com'
                 });
 
-            if (process.env.NODE_ENV === 'development') {
+            if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
                 resetToken = res.body.data.resetToken;
             }
         });
@@ -322,7 +330,7 @@ describe('Authentication API', () => {
             const res = await request(app)
                 .post('/auth/reset-password')
                 .send({
-                    token: 'invalid.token.here',
+                    token: 'a'.repeat(64),
                     newPassword: 'NewSecurePass456!',
                     confirmPassword: 'NewSecurePass456!'
                 });
@@ -359,7 +367,7 @@ describe('Authentication API', () => {
         let customerToken;
         let adminToken;
 
-        beforeEach(async () => {
+        beforeAll(async () => {
             // Register customer
             const customerRes = await request(app)
                 .post('/auth/register')

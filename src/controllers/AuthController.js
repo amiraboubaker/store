@@ -158,7 +158,7 @@ class AuthController {
                 status: 'success',
                 code: 'PASSWORD_RESET_REQUESTED',
                 message: result.message,
-                data: process.env.NODE_ENV === 'development' ? result : null
+                data: (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') ? result : null
             });
         } catch (error) {
             next(error);

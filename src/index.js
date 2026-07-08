@@ -5,6 +5,7 @@ const { Sequelize } = require('sequelize');
 const { errorHandler, createAuthMiddleware } = require('./middleware/auth');
 const authRoutes = require('./routes/auth');
 const protectedRoutes = require('./routes/protected.example');
+const productRoutes = require('./routes/products');
 
 const app = express();
 
@@ -21,22 +22,15 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Body Parser
-app.use(express.json({ limit: '10kb' })); // Limit payload size
+app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ limit: '10kb', extended: true }));
-
-// Request Logging Middleware (development only)
-if (process.env.NODE_ENV === 'development') {
-    app.use((req, res, next) => {
-        console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
-        next();
-    });
-}
 
 /**
  * Database Connection and Initialization
  */
 let sequelize;
 let User;
+let Product;
 
 const initializeDatabase = async () => {
     try {
@@ -49,7 +43,7 @@ const initializeDatabase = async () => {
                 host: process.env.DB_HOST || 'localhost',
                 port: process.env.DB_PORT || 3306,
                 dialect: 'mysql',
-                logging: process.env.NODE_ENV === 'development' ? console.log : false,
+                logging: false,
                 pool: {
                     max: 5,
                     min: 0,
@@ -63,11 +57,13 @@ const initializeDatabase = async () => {
         await sequelize.authenticate();
         console.log('✓ MySQL database connected');
 
-        // Define User model
+        // Define models
         User = require('./models/User')(sequelize);
+        Product = require('./models/Product')(sequelize);
 
-        // Sync database (create tables if they don't exist)
-        await sequelize.sync();
+        // Sync database (create tables if they don't exist, and reconcile
+        // existing tables with the models so missing columns/indexes are added)
+        await sequelize.sync({ alter: true });
         console.log('✓ Database tables synced');
 
         return { sequelize, User };
@@ -80,7 +76,7 @@ const initializeDatabase = async () => {
 /**
  * Routes Setup (requires User model to be defined)
  */
-const setupRoutes = (User) => {
+const setupRoutes = (User, Product) => {
     // Health Check
     app.get('/health', (req, res) => {
         res.status(200).json({
@@ -113,6 +109,7 @@ const setupRoutes = (User) => {
     // Protected Routes Example
     app.use('/admin', protectedRoutes(User));
     app.use('/customer', protectedRoutes(User));
+    app.use('/products', productRoutes(User, Product));
 
     /**
      * 404 Handler
@@ -133,14 +130,24 @@ const setupRoutes = (User) => {
 };
 
 /**
- * Server Startup
+ * Bootstrap the application (database + routes) without starting the server.
+ * Exported so tests can initialize the app before sending requests.
  */
-const startServer = async () => {
+const bootstrap = async () => {
     const { sequelize: db, User: UserModel } = await initializeDatabase();
     sequelize = db;
     User = UserModel;
 
-    setupRoutes(User);
+    setupRoutes(User, Product);
+
+    return { app, User, sequelize };
+};
+
+/**
+ * Server Startup
+ */
+const startServer = async () => {
+    await bootstrap();
 
     const PORT = process.env.PORT || 5000;
     const server = app.listen(PORT, () => {
@@ -178,4 +185,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = app;
+module.exports = { app, bootstrap };

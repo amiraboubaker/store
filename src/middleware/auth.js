@@ -139,6 +139,16 @@ const roleMiddleware = (allowedRoles) => {
  * Error handling middleware
  */
 const errorHandler = (err, req, res, next) => {
+    // Payload too large
+    if (err.type === 'entity.too.large' || err.name === 'PayloadTooLargeError') {
+        return res.status(413).json({
+            status: 'error',
+            code: 'PAYLOAD_TOO_LARGE',
+            message: 'Request payload exceeds size limit',
+            data: null
+        });
+    }
+
     console.error('Error:', err);
 
     // Validation errors

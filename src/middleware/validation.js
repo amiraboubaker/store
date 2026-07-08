@@ -96,7 +96,7 @@ const handleValidationErrors = (req, res, next) => {
 
     if (!errors.isEmpty()) {
         const formattedErrors = errors.array().reduce((acc, error) => {
-            acc[error.param] = error.msg;
+            acc[error.path || error.param] = error.msg;
             return acc;
         }, {});
 

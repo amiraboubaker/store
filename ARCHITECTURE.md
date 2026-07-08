@@ -43,7 +43,7 @@ project-root/
 │   │   ├── auth.js                 # Authentication endpoints
 │   │   └── protected.example.js    # Protected route examples
 │   └── tests/
-│       └── auth.test.example.js    # Unit & integration tests
+│       └── auth.test.js           # Unit & integration tests (Jest)
 ├── .env.example                    # Environment variables template
 ├── .env                            # Actual secrets (git ignored)
 ├── .gitignore                      # Git ignore rules

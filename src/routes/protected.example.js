@@ -92,7 +92,7 @@ router.get(
             code: 'ORDERS_RETRIEVED',
             message: 'Orders retrieved successfully',
             data: {
-                userId: req.user._id,
+                userId: req.user.id,
                 orders: [
                     // User's orders would go here
                 ]
@@ -116,7 +116,7 @@ router.post(
             message: 'Order created successfully',
             data: {
                 orderId: 'order_123',
-                userId: req.user._id
+                userId: req.user.id
                 // Order details would go here
             }
         });

@@ -171,7 +171,7 @@
 ✓ src/middleware/validation.js    # Input validation
 ✓ src/routes/auth.js              # Auth endpoints
 ✓ src/routes/protected.example.js # Protected route examples
-✓ src/tests/auth.test.example.js  # Test suite example
+✓ src/tests/auth.test.js          # Test suite (Jest)
 ```
 
 ### Configuration Files

@@ -196,7 +196,7 @@ class AuthService {
         // For now, return the token for development/testing purposes
         return {
             message: 'Password reset email sent',
-            resetToken: process.env.NODE_ENV === 'development' ? resetToken : undefined
+            resetToken: (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') ? resetToken : undefined
         };
     }
 

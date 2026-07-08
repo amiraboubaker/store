@@ -137,7 +137,7 @@ This is a **complete, production-ready authentication system** for an e-commerce
 
 ---
 
-#### `src/tests/auth.test.example.js`
+#### `src/tests/auth.test.js`
 **Purpose:** Unit and integration test examples using Jest
 **Test Coverage:**
 - Registration tests
