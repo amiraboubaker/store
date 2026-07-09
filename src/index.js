@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth');
 const protectedRoutes = require('./routes/protected.example');
 const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
+const checkoutRoutes = require('./routes/checkout');
 
 const app = express();
 
@@ -23,7 +24,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Body Parser
-app.use(express.json({ limit: '10kb' }));
+app.use(express.json({ limit: '10kb', verify: (req, res, buf) => {
+    req.rawBody = buf;
+}}));
 app.use(express.urlencoded({ limit: '10kb', extended: true }));
 
 /**
@@ -33,6 +36,9 @@ let sequelize;
 let User;
 let Product;
 let Cart;
+let Order;
+let OrderItem;
+let Payment;
 
 const initializeDatabase = async () => {
     try {
@@ -67,15 +73,27 @@ const initializeDatabase = async () => {
         User = require('./models/User')(sequelize);
         Product = require('./models/Product')(sequelize);
         Cart = require('./models/Cart')(sequelize);
+        Order = require('./models/Order')(sequelize);
+        OrderItem = require('./models/OrderItem')(sequelize);
+        Payment = require('./models/Payment')(sequelize);
 
         if (User.associate) {
-            User.associate({ User, Product, Cart });
+            User.associate({ User, Product, Cart, Order, OrderItem, Payment });
         }
         if (Product.associate) {
-            Product.associate({ User, Product, Cart });
+            Product.associate({ User, Product, Cart, Order, OrderItem, Payment });
         }
         if (Cart.associate) {
-            Cart.associate({ User, Product, Cart });
+            Cart.associate({ User, Product, Cart, Order, OrderItem, Payment });
+        }
+        if (Order.associate) {
+            Order.associate({ User, Product, Cart, Order, OrderItem, Payment });
+        }
+        if (OrderItem.associate) {
+            OrderItem.associate({ User, Product, Cart, Order, OrderItem, Payment });
+        }
+        if (Payment.associate) {
+            Payment.associate({ User, Product, Cart, Order, OrderItem, Payment });
         }
 
         // Sync database (create tables if they don't exist, and reconcile
@@ -84,7 +102,7 @@ const initializeDatabase = async () => {
         await sequelize.sync(syncOptions);
         console.log('✓ Database tables synced');
 
-        return { sequelize, User };
+        return { sequelize, User, Product, Cart, Order, OrderItem, Payment };
     } catch (error) {
         console.error('✗ Database connection error:', error.message);
         throw error;
@@ -94,7 +112,7 @@ const initializeDatabase = async () => {
 /**
  * Routes Setup (requires User model to be defined)
  */
-const setupRoutes = (User, Product, Cart) => {
+const setupRoutes = (User, Product, Cart, Order, OrderItem, Payment) => {
     // Health Check
     app.get('/health', (req, res) => {
         res.status(200).json({
@@ -129,6 +147,7 @@ const setupRoutes = (User, Product, Cart) => {
     app.use('/customer', protectedRoutes(User));
     app.use('/products', productRoutes(User, Product));
     app.use('/cart', cartRoutes(User, Product, Cart));
+    app.use('/checkout', checkoutRoutes(User, Product, Cart, Order, OrderItem, Payment));
 
     /**
      * 404 Handler
@@ -153,15 +172,12 @@ const setupRoutes = (User, Product, Cart) => {
  * Exported so tests can initialize the app before sending requests.
  */
 const bootstrap = async () => {
-    const { sequelize: db, User: UserModel } = await initializeDatabase();
+    const { sequelize: db, User, Product, Cart, Order, OrderItem, Payment } = await initializeDatabase();
     sequelize = db;
-    User = UserModel;
-    Product = require('./models/Product')(sequelize);
-    Cart = require('./models/Cart')(sequelize);
 
-    setupRoutes(User, Product, Cart);
+    setupRoutes(User, Product, Cart, Order, OrderItem, Payment);
 
-    return { app, User, Product, Cart, sequelize };
+    return { app, User, Product, Cart, Order, OrderItem, Payment, sequelize };
 };
 
 /**
