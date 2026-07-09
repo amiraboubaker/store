@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-couture-cream text-couture-espresso antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-6 py-3 font-medium rounded-none transition-all duration-200 ease-out;
+  }
+  .btn-primary {
+    @apply btn bg-couture-espresso text-white hover:bg-couture-coffee focus:outline-none focus:ring-2 focus:ring-couture-gold focus:ring-offset-2;
+  }
+  .btn-secondary {
+    @apply btn bg-transparent border border-couture-espresso text-couture-espresso hover:bg-couture-espresso hover:text-white;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-couture-espresso hover:text-couture-goldDark;
+  }
+  .container {
+    @apply mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl;
+  }
+  .section {
+    @apply py-12 md:py-16 lg:py-24;
+  }
+  .card {
+    @apply bg-white border border-couture-linen rounded-none;
+  }
+  .input {
+    @apply w-full px-4 py-3 bg-white border border-couture-linen text-couture-espresso placeholder-couture-taupe focus:outline-none focus:border-couture-gold transition-colors;
+  }
+  .label {
+    @apply block text-sm font-medium text-couture-bark mb-1;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
