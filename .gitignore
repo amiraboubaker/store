@@ -2,6 +2,7 @@
 .env
 .env.local
 .env.*.local
+.env.production
 
 # Node Modules
 node_modules/
@@ -15,7 +16,10 @@ yarn-error.log*
 *.swp
 *.swo
 *~
+
+# OS files
 .DS_Store
+Thumbs.db
 
 # Testing
 coverage/
@@ -35,13 +39,18 @@ logs/
 tmp/
 temp/
 
-# OS files
-.DS_Store
-Thumbs.db
-
 # Build outputs
 dist/
 build/
+
+# Docker
+docker-compose*.yml
+.dockerignore
+docker/
+
+# Database
+*.sqlite
+database.sqlite
 
 # Security
 *.pem
