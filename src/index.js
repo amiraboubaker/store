@@ -4,6 +4,7 @@ const cors = require('cors');
 const { Sequelize } = require('sequelize');
 const { errorHandler, createAuthMiddleware } = require('./middleware/auth');
 const authRoutes = require('./routes/auth');
+const adminRoutes = require('./routes/admin');
 const protectedRoutes = require('./routes/protected.example');
 const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
@@ -39,6 +40,7 @@ let Cart;
 let Order;
 let OrderItem;
 let Payment;
+let AdminActionLog;
 
 const initializeDatabase = async () => {
     try {
@@ -76,24 +78,28 @@ const initializeDatabase = async () => {
         Order = require('./models/Order')(sequelize);
         OrderItem = require('./models/OrderItem')(sequelize);
         Payment = require('./models/Payment')(sequelize);
+        AdminActionLog = require('./models/AdminActionLog')(sequelize);
 
         if (User.associate) {
-            User.associate({ User, Product, Cart, Order, OrderItem, Payment });
+            User.associate({ User, Product, Cart, Order, OrderItem, Payment, AdminActionLog });
         }
         if (Product.associate) {
-            Product.associate({ User, Product, Cart, Order, OrderItem, Payment });
+            Product.associate({ User, Product, Cart, Order, OrderItem, Payment, AdminActionLog });
         }
         if (Cart.associate) {
-            Cart.associate({ User, Product, Cart, Order, OrderItem, Payment });
+            Cart.associate({ User, Product, Cart, Order, OrderItem, Payment, AdminActionLog });
         }
         if (Order.associate) {
-            Order.associate({ User, Product, Cart, Order, OrderItem, Payment });
+            Order.associate({ User, Product, Cart, Order, OrderItem, Payment, AdminActionLog });
         }
         if (OrderItem.associate) {
-            OrderItem.associate({ User, Product, Cart, Order, OrderItem, Payment });
+            OrderItem.associate({ User, Product, Cart, Order, OrderItem, Payment, AdminActionLog });
         }
         if (Payment.associate) {
-            Payment.associate({ User, Product, Cart, Order, OrderItem, Payment });
+            Payment.associate({ User, Product, Cart, Order, OrderItem, Payment, AdminActionLog });
+        }
+        if (AdminActionLog.associate) {
+            AdminActionLog.associate({ User, Product, Cart, Order, OrderItem, Payment, AdminActionLog });
         }
 
         // Sync database (create tables if they don't exist, and reconcile
@@ -102,7 +108,12 @@ const initializeDatabase = async () => {
         await sequelize.sync(syncOptions);
         console.log('✓ Database tables synced');
 
-        return { sequelize, User, Product, Cart, Order, OrderItem, Payment };
+        // Seed a bootstrap admin from environment variables (skipped in tests)
+        if (!isJest && process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
+            await seedAdmin(User);
+        }
+
+        return { sequelize, User, Product, Cart, Order, OrderItem, Payment, AdminActionLog };
     } catch (error) {
         console.error('✗ Database connection error:', error.message);
         throw error;
@@ -110,9 +121,32 @@ const initializeDatabase = async () => {
 };
 
 /**
+ * Create an initial admin account from environment variables if one does not
+ * already exist. This is the only supported way to mint the first admin role.
+ */
+const seedAdmin = async (User) => {
+    try {
+        const existing = await User.findOne({ where: { email: process.env.ADMIN_EMAIL.toLowerCase() } });
+        if (existing) return;
+
+        await User.create({
+            firstName: process.env.ADMIN_FIRST_NAME || 'Admin',
+            lastName: process.env.ADMIN_LAST_NAME || 'User',
+            email: process.env.ADMIN_EMAIL.toLowerCase(),
+            password: process.env.ADMIN_PASSWORD,
+            role: 'admin',
+            isEmailVerified: true
+        });
+        console.log(`✓ Bootstrap admin created: ${process.env.ADMIN_EMAIL}`);
+    } catch (error) {
+        console.error('✗ Failed to seed admin:', error.message);
+    }
+};
+
+/**
  * Routes Setup (requires User model to be defined)
  */
-const setupRoutes = (User, Product, Cart, Order, OrderItem, Payment) => {
+const setupRoutes = (User, Product, Cart, Order, OrderItem, Payment, AdminActionLog) => {
     // Health Check
     app.get('/health', (req, res) => {
         res.status(200).json({
@@ -142,8 +176,15 @@ const setupRoutes = (User, Product, Cart, Order, OrderItem, Payment) => {
     // Authentication Routes
     app.use('/auth', authRoutes(User, Product, Cart));
 
-    // Protected Routes Example
-    app.use('/admin', protectedRoutes(User));
+    // Admin UI (static, served separately from the API so admin and customer
+    // surfaces never share a single interface/route tree)
+    const path = require('path');
+    const adminUiDir = path.join(__dirname, '..', 'public', 'admin');
+    app.use('/admin-ui', express.static(adminUiDir));
+
+    // Admin API (every route is restricted to the admin role by the router)
+    app.use('/admin', adminRoutes({ User, Product, Order, OrderItem, AdminActionLog }));
+
     app.use('/customer', protectedRoutes(User));
     app.use('/products', productRoutes(User, Product));
     app.use('/cart', cartRoutes(User, Product, Cart));
@@ -172,12 +213,12 @@ const setupRoutes = (User, Product, Cart, Order, OrderItem, Payment) => {
  * Exported so tests can initialize the app before sending requests.
  */
 const bootstrap = async () => {
-    const { sequelize: db, User, Product, Cart, Order, OrderItem, Payment } = await initializeDatabase();
+    const { sequelize: db, User, Product, Cart, Order, OrderItem, Payment, AdminActionLog } = await initializeDatabase();
     sequelize = db;
 
-    setupRoutes(User, Product, Cart, Order, OrderItem, Payment);
+    setupRoutes(User, Product, Cart, Order, OrderItem, Payment, AdminActionLog);
 
-    return { app, User, Product, Cart, Order, OrderItem, Payment, sequelize };
+    return { app, User, Product, Cart, Order, OrderItem, Payment, AdminActionLog, sequelize };
 };
 
 /**

@@ -5,12 +5,12 @@ module.exports = (sequelize) => {
         'Cart',
         {
             id: {
-                type: DataTypes.INTEGER,
+                type: DataTypes.BIGINT.UNSIGNED,
                 primaryKey: true,
                 autoIncrement: true
             },
             userId: {
-                type: DataTypes.INTEGER,
+                type: DataTypes.BIGINT.UNSIGNED,
                 allowNull: false,
                 unique: true
             },

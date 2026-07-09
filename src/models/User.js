@@ -6,7 +6,7 @@ module.exports = (sequelize) => {
         'User',
         {
             id: {
-                type: DataTypes.INTEGER,
+                type: DataTypes.BIGINT.UNSIGNED,
                 primaryKey: true,
                 autoIncrement: true
             },
@@ -82,7 +82,6 @@ module.exports = (sequelize) => {
         {
             timestamps: true,
             indexes: [
-                { fields: ['email'] },
                 { fields: ['role'] }
             ]
         }

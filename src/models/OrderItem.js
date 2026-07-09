@@ -5,17 +5,17 @@ module.exports = (sequelize) => {
         'OrderItem',
         {
             id: {
-                type: DataTypes.INTEGER,
+                type: DataTypes.BIGINT.UNSIGNED,
                 primaryKey: true,
                 autoIncrement: true
             },
             orderId: {
-                type: DataTypes.INTEGER,
+                type: DataTypes.BIGINT.UNSIGNED,
                 allowNull: false
             },
             productId: {
-                type: DataTypes.INTEGER,
-                allowNull: false
+                type: DataTypes.BIGINT.UNSIGNED,
+                allowNull: true
             },
             quantity: {
                 type: DataTypes.INTEGER,

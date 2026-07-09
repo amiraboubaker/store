@@ -5,12 +5,12 @@ module.exports = (sequelize) => {
         'Payment',
         {
             id: {
-                type: DataTypes.INTEGER,
+                type: DataTypes.BIGINT.UNSIGNED,
                 primaryKey: true,
                 autoIncrement: true
             },
             orderId: {
-                type: DataTypes.INTEGER,
+                type: DataTypes.BIGINT.UNSIGNED,
                 allowNull: false
             },
             amount: {

@@ -1,0 +1,124 @@
+:root {
+    --bg: #0f1419;
+    --surface: #1a2230;
+    --surface-2: #232e40;
+    --border: #2e3a4f;
+    --text: #e6edf3;
+    --muted: #8a98ad;
+    --primary: #4f8cff;
+    --primary-dark: #3a6fd6;
+    --danger: #ff5d5d;
+    --ok: #3ecf8e;
+    --warn: #f0b429;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.muted { color: var(--muted); font-size: 0.85rem; }
+.error { color: var(--danger); font-size: 0.85rem; }
+
+/* Login */
+.login-view {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+.login-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2rem;
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.login-card h1 { margin: 0; }
+.login-card label { display: flex; flex-direction: column; font-size: 0.8rem; color: var(--muted); gap: 0.25rem; }
+
+/* App layout */
+.app-view { display: flex; min-height: 100vh; }
+.sidebar {
+    width: 220px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+.sidebar h2 { margin: 0 0 1rem; }
+.sidebar nav { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; }
+.nav-btn {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    text-align: left;
+    padding: 0.6rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+.nav-btn:hover { background: var(--surface-2); color: var(--text); }
+.nav-btn.active { background: var(--primary); color: #fff; }
+.sidebar-footer { display: flex; flex-direction: column; gap: 0.25rem; margin-top: 1rem; }
+
+.content { flex: 1; padding: 1.5rem 2rem; overflow: auto; }
+.panel-head { display: flex; justify-content: space-between; align-items: center; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.88rem; }
+th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
+th { color: var(--muted); font-weight: 600; }
+tbody tr:hover { background: var(--surface); }
+
+/* Cards */
+.metric-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin: 1rem 0; }
+.metric-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
+.metric-card .value { font-size: 1.6rem; font-weight: 700; margin-top: 0.25rem; }
+.metric-card .label { color: var(--muted); font-size: 0.8rem; }
+
+/* Forms / inputs */
+input, textarea, select {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 0.5rem;
+    font: inherit;
+}
+label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.8rem; color: var(--muted); }
+
+button {
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem 0.8rem;
+    cursor: pointer;
+}
+button:hover { filter: brightness(1.15); }
+.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+.link-btn { background: transparent; border: none; color: var(--primary); padding: 0; cursor: pointer; }
+.row-actions { display: flex; gap: 0.4rem; }
+
+/* Status badges */
+.badge { padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+.badge.pending { background: rgba(240,180,41,0.15); color: var(--warn); }
+.badge.paid { background: rgba(62,207,142,0.15); color: var(--ok); }
+.badge.shipped { background: rgba(79,140,255,0.15); color: var(--primary); }
+.badge.canceled { background: rgba(255,93,93,0.15); color: var(--danger); }
+.badge.active { background: rgba(62,207,142,0.15); color: var(--ok); }
+.badge.inactive { background: rgba(138,152,173,0.15); color: var(--muted); }
+
+/* Modal */
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; }
+.modal-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; width: 420px; display: flex; flex-direction: column; gap: 0.75rem; }
+.modal-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
