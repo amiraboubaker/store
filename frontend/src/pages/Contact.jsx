@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Reveal from '../components/Reveal'
 import SectionHeading from '../components/SectionHeading'
+import PageBanner from '../components/PageBanner'
 import { contact } from '../data/company'
 
 function ContactInfoCard({ icon, label, value, href }) {
@@ -42,23 +43,11 @@ function Contact() {
 
   return (
     <div>
-      {/* Hero */}
-      <section className="relative bg-white border-b border-couture-linen">
-        <div className="container section">
-          <Reveal>
-            <p className="text-sm uppercase tracking-widest text-couture-bark mb-4">
-              Contact
-            </p>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-couture-espresso leading-tight mb-4 text-balance">
-              Let's Create Together
-            </h1>
-            <p className="text-lg text-couture-bark leading-relaxed max-w-2xl">
-              Whether you have a ready project or just an idea, our team is here
-              to help you bring it to life.
-            </p>
-          </Reveal>
-        </div>
-      </section>
+      <PageBanner
+        eyebrow="Contact"
+        title="Let's Create Together"
+        subtitle="Whether you have a ready project or just an idea, our team is here to help you bring it to life."
+      />
 
       <section className="section bg-white">
         <div className="container">

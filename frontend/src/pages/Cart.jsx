@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { formatPrice } from '../utils/helpers'
+import PageBanner from '../components/PageBanner'
 import { cart as initialCart } from '../data/products'
 
 function Cart() {
@@ -55,11 +56,10 @@ function Cart() {
   }
 
   return (
-    <div className="section bg-white">
-      <div className="container">
-        <h1 className="text-3xl md:text-4xl font-display font-medium text-couture-espresso mb-8">
-          Shopping Cart
-        </h1>
+    <div className="bg-white">
+      <PageBanner eyebrow="Shop" title="Shopping Cart" />
+      <div className="section">
+        <div className="container">
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
           <div className="lg:col-span-2">
@@ -169,6 +169,7 @@ function Cart() {
               </Link>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

@@ -2,27 +2,17 @@ import { Link } from 'react-router-dom'
 import Reveal from '../components/Reveal'
 import SectionHeading from '../components/SectionHeading'
 import Counter from '../components/Counter'
+import PageBanner from '../components/PageBanner'
 import { company, stats, clients, media } from '../data/company'
 
 function About() {
   return (
     <div>
-      {/* Hero */}
-      <section className="relative bg-white border-b border-couture-linen overflow-hidden">
-        <div className="container section">
-          <Reveal>
-            <p className="text-sm uppercase tracking-widest text-couture-bark mb-4">
-              About Us
-            </p>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-couture-espresso leading-tight mb-6 max-w-3xl text-balance">
-              Two Decades of Textile Craftsmanship
-            </h1>
-            <p className="text-lg text-couture-bark leading-relaxed max-w-2xl">
-              {company.about}
-            </p>
-          </Reveal>
-        </div>
-      </section >
+      <PageBanner
+        eyebrow="About Us"
+        title="Two Decades of Textile Craftsmanship"
+        subtitle={company.about}
+      />
 
       {/* Story + image */}
       < section className="section bg-white" >

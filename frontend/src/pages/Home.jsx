@@ -35,7 +35,7 @@ function Home() {
         {/* Stronger gradient only behind the text (left) for clear legibility */}
         <div className="absolute inset-0 bg-gradient-to-r from-couture-espresso/85 via-couture-espresso/45 to-transparent" />
 
-        <div className="container section relative min-h-[68vh] md:min-h-[82vh] flex items-center">
+        <div className="container section relative min-h-[45vh] md:min-h-[55vh] flex items-center">
           <div className="max-w-2xl animate-slide-up [text-shadow:0_2px_14px_rgba(0,0,0,0.45)]">
             <p className="text-sm uppercase tracking-widest text-couture-goldLight mb-4">
               Premium Couture Supplies

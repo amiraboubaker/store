@@ -2,30 +2,17 @@ import { Link } from 'react-router-dom'
 import Reveal from '../components/Reveal'
 import SectionHeading from '../components/SectionHeading'
 import Counter from '../components/Counter'
+import PageBanner from '../components/PageBanner'
 import { services, productRange, stats, company } from '../data/company'
 
 function Services() {
   return (
     <div>
-      {/* Hero */}
-      <section className="relative bg-couture-espresso text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_right,theme(colors.couture.gold),transparent_55%)]" />
-        <div className="container section relative">
-          <div className="max-w-3xl">
-            <p className="text-sm uppercase tracking-widest text-couture-goldLight mb-4">
-              What We Do
-            </p>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium leading-tight mb-6 text-balance">
-              End-to-End Textile Manufacturing
-            </h1>
-            <p className="text-lg text-white/75 leading-relaxed max-w-2xl">
-              From the first sketch to the final quality check, our integrated
-              atelier guides your project through every stage of production with
-              precision and care.
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageBanner
+        eyebrow="What We Do"
+        title="End-to-End Textile Manufacturing"
+        subtitle="From the first sketch to the final quality check, our integrated atelier guides your project through every stage of production with precision and care."
+      />
 
       {/* Services grid */}
       <section className="section bg-white">

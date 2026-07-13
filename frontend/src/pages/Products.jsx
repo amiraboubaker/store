@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import ProductCard from '../components/ProductCard'
 import Loading from '../components/Loading'
 import ErrorState from '../components/ErrorState'
+import PageBanner from '../components/PageBanner'
 import { products, categories } from '../data/products'
 
 function Products() {
@@ -32,16 +33,10 @@ function Products() {
   }
 
   return (
-    <div className="section bg-white">
-      <div className="container">
-        <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-4xl font-display font-medium text-couture-espresso mb-4">
-            Our Collection
-          </h1>
-          <p className="text-couture-bark max-w-2xl mx-auto">
-            Browse our selection of premium fabrics, trims, and notions.
-          </p>
-        </div>
+    <div className="bg-white">
+      <PageBanner eyebrow="Shop" title="Our Collection" subtitle="Browse our selection of premium fabrics, trims, and notions." />
+      <div className="section">
+        <div className="container">
 
         <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
           {categories.map((category) => (
@@ -77,6 +72,7 @@ function Products() {
             )}
           </>
         )}
+        </div>
       </div>
     </div>
   )
