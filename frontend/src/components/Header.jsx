@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { media } from '../data/company'
+import { Link, useLocation } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
-import { useAuth } from '../context/AuthContext'
 
 const LANGUAGES = [
   { code: 'fr', label: 'FR' },
@@ -11,18 +9,13 @@ const LANGUAGES = [
 ]
 
 function Header() {
-  const [cartCount, setCartCount] = useState(3)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [progress, setProgress] = useState(0)
   const [langOpen, setLangOpen] = useState(false)
-  const [profileOpen, setProfileOpen] = useState(false)
   const langRef = useRef(null)
-  const profileRef = useRef(null)
   const location = useLocation()
-  const navigate = useNavigate()
   const { lang, setLang, t } = useLanguage()
-  const { user, logout } = useAuth()
 
   const currentLang = LANGUAGES.find((l) => l.code === lang)
 
@@ -41,7 +34,6 @@ function Header() {
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (langRef.current && !langRef.current.contains(e.target)) setLangOpen(false)
-      if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false)
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
@@ -69,9 +61,7 @@ function Header() {
       <div className="container">
         <div className="flex items-center justify-between h-16 md:h-20">
           <Link to="/" className="flex items-center space-x-2">
-            <span className="font-display text-xl md:text-2xl font-semibold text-couture-espresso tracking-tight">
-              Rayes Modes
-            </span>
+            <img src="/assets/images/icogam/logo.png" alt="Rayes Modes" className="h-10 md:h-12 w-auto" />
           </Link>
 
           <nav className="hidden lg:flex items-center space-x-8">
@@ -96,69 +86,6 @@ function Header() {
           </nav>
 
           <div className="flex items-center space-x-3">
-            <Link
-              to="/cart"
-              className="relative p-2 text-couture-bark hover:text-couture-espresso transition-colors"
-              aria-label={t('nav_cart_label')}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-couture-espresso text-white text-xs font-medium">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
-
-            {/* Profile Dropdown */}
-            <div className="relative" ref={profileRef}>
-              <button
-                onClick={() => setProfileOpen(!profileOpen)}
-                className="p-2 text-couture-bark hover:text-couture-espresso transition-colors"
-                aria-label="Account"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </button>
-              {profileOpen && (
-                <div className="absolute right-0 mt-1 w-44 bg-white border border-couture-linen shadow-md z-50">
-                  {user ? (
-                    <>
-                      <div className="px-4 py-3 border-b border-couture-linen">
-                        <p className="text-xs text-couture-bark truncate">{user.firstName} {user.lastName}</p>
-                        <p className="text-xs text-couture-bark truncate opacity-60">{user.email}</p>
-                      </div>
-                      <button
-                        onClick={() => { logout(); setProfileOpen(false); navigate('/') }}
-                        className="w-full text-left px-4 py-2.5 text-sm text-couture-bark hover:bg-couture-linen/50 hover:text-couture-espresso transition-colors"
-                      >
-                        {t('auth_logout')}
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <Link
-                        to="/login"
-                        onClick={() => setProfileOpen(false)}
-                        className="block px-4 py-2.5 text-sm text-couture-bark hover:bg-couture-linen/50 hover:text-couture-espresso transition-colors"
-                      >
-                        {t('auth_login')}
-                      </Link>
-                      <Link
-                        to="/register"
-                        onClick={() => setProfileOpen(false)}
-                        className="block px-4 py-2.5 text-sm text-couture-bark hover:bg-couture-linen/50 hover:text-couture-espresso transition-colors"
-                      >
-                        {t('auth_register')}
-                      </Link>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-
             {/* Language Dropdown */}
             <div className="relative" ref={langRef}>
               <button

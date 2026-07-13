@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { formatPrice } from '../utils/helpers'
 import Loading from '../components/Loading'
 import ErrorState from '../components/ErrorState'
 import { products } from '../data/products'
@@ -10,7 +9,6 @@ function ProductDetail() {
   const { id } = useParams()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
-  const [quantity, setQuantity] = useState(1)
   const { t } = useLanguage()
 
   const product = products.find((p) => p.id === id)
@@ -18,7 +16,6 @@ function ProductDetail() {
   useEffect(() => {
     setLoading(true)
     setError(false)
-    setQuantity(1)
     const timer = setTimeout(() => setLoading(false), 500)
     return () => clearTimeout(timer)
   }, [id])
@@ -77,7 +74,6 @@ function ProductDetail() {
               <span className="text-sm text-couture-bark">{product.rating} {t('detail_rating')}</span>
             </div>
 
-            <p className="text-2xl font-semibold text-couture-espresso mb-6">{formatPrice(product.price)}</p>
             <p className="text-couture-bark leading-relaxed mb-8">{product.description}</p>
 
             <div className="space-y-3 mb-8 text-sm">
@@ -101,7 +97,7 @@ function ProductDetail() {
                 {product.colors.map((color) => (
                   <span
                     key={color}
-                    className="px-4 py-2 border border-couture-linen text-sm text-couture-espresso hover:border-couture-espresso transition-colors cursor-pointer"
+                    className="px-4 py-2 border border-couture-linen text-sm text-couture-espresso"
                   >
                     {color}
                   </span>
@@ -109,39 +105,9 @@ function ProductDetail() {
               </div>
             </div>
 
-            <div className="flex items-center space-x-4 mb-8">
-              <div className="flex items-center border border-couture-linen">
-                <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-4 py-3 text-couture-bark hover:text-couture-espresso transition-colors"
-                  aria-label={t('detail_decrease')}
-                >
-                  -
-                </button>
-                <span className="px-4 py-3 min-w-[3rem] text-center text-couture-espresso font-medium">
-                  {quantity}
-                </span>
-                <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="px-4 py-3 text-couture-bark hover:text-couture-espresso transition-colors"
-                  aria-label={t('detail_increase')}
-                >
-                  +
-                </button>
-              </div>
-              <button className="flex-1 btn btn-primary">{t('detail_add_to_cart')}</button>
-            </div>
-
-            {product.inStock ? (
-              <p className="text-sm text-couture-sage flex items-center">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                {t('detail_in_stock')}
-              </p>
-            ) : (
-              <p className="text-sm text-couture-bark">{t('detail_out_of_stock')}</p>
-            )}
+            <Link to="/contact" className="btn btn-primary inline-block">
+              {t('detail_enquire')}
+            </Link>
           </div>
         </div>
       </div>

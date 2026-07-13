@@ -17,7 +17,7 @@ function Footer() {
 
           <div>
             <h4 className="text-sm font-medium text-white uppercase tracking-wider mb-4">
-              Shop
+              Catalogue
             </h4>
             <ul className="space-y-2">
               <li>
@@ -61,11 +61,6 @@ function Footer() {
               <li>
                 <Link to="/contact" className="text-sm text-couture-taupe hover:text-white transition-colors">
                   Contact
-                </Link>
-              </li>
-              <li>
-                <Link to="/dashboard" className="text-sm text-couture-taupe hover:text-white transition-colors">
-                  Dashboard
                 </Link>
               </li>
             </ul>
