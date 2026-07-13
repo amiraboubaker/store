@@ -9,6 +9,7 @@ const protectedRoutes = require('./routes/protected.example');
 const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
 const checkoutRoutes = require('./routes/checkout');
+const contactRoutes = require('./routes/contact');
 
 const app = express();
 
@@ -41,6 +42,7 @@ let Order;
 let OrderItem;
 let Payment;
 let AdminActionLog;
+let Contact;
 
 const initializeDatabase = async () => {
     try {
@@ -79,6 +81,7 @@ const initializeDatabase = async () => {
         OrderItem = require('./models/OrderItem')(sequelize);
         Payment = require('./models/Payment')(sequelize);
         AdminActionLog = require('./models/AdminActionLog')(sequelize);
+        Contact = require('./models/Contact')(sequelize);
 
         if (User.associate) {
             User.associate({ User, Product, Cart, Order, OrderItem, Payment, AdminActionLog });
@@ -113,7 +116,7 @@ const initializeDatabase = async () => {
             await seedAdmin(User);
         }
 
-        return { sequelize, User, Product, Cart, Order, OrderItem, Payment, AdminActionLog };
+        return { sequelize, User, Product, Cart, Order, OrderItem, Payment, AdminActionLog, Contact };
     } catch (error) {
         console.error('✗ Database connection error:', error.message);
         throw error;
@@ -146,7 +149,7 @@ const seedAdmin = async (User) => {
 /**
  * Routes Setup (requires User model to be defined)
  */
-const setupRoutes = (User, Product, Cart, Order, OrderItem, Payment, AdminActionLog) => {
+const setupRoutes = (User, Product, Cart, Order, OrderItem, Payment, AdminActionLog, Contact) => {
     // Health Check
     app.get('/health', (req, res) => {
         res.status(200).json({
@@ -189,6 +192,7 @@ const setupRoutes = (User, Product, Cart, Order, OrderItem, Payment, AdminAction
     app.use('/products', productRoutes(User, Product));
     app.use('/cart', cartRoutes(User, Product, Cart));
     app.use('/checkout', checkoutRoutes(User, Product, Cart, Order, OrderItem, Payment));
+    app.use('/contact', contactRoutes(Contact));
 
     /**
      * 404 Handler
@@ -213,12 +217,12 @@ const setupRoutes = (User, Product, Cart, Order, OrderItem, Payment, AdminAction
  * Exported so tests can initialize the app before sending requests.
  */
 const bootstrap = async () => {
-    const { sequelize: db, User, Product, Cart, Order, OrderItem, Payment, AdminActionLog } = await initializeDatabase();
+    const { sequelize: db, User, Product, Cart, Order, OrderItem, Payment, AdminActionLog, Contact } = await initializeDatabase();
     sequelize = db;
 
-    setupRoutes(User, Product, Cart, Order, OrderItem, Payment, AdminActionLog);
+    setupRoutes(User, Product, Cart, Order, OrderItem, Payment, AdminActionLog, Contact);
 
-    return { app, User, Product, Cart, Order, OrderItem, Payment, AdminActionLog, sequelize };
+    return { app, User, Product, Cart, Order, OrderItem, Payment, AdminActionLog, Contact, sequelize };
 };
 
 /**

@@ -5,8 +5,8 @@
 export const media = {
   logo: '/assets/images/icogam/logo.png',
   heroImage: '/assets/images/icogam/image1.jpg',
-  aboutImage: '/assets/images/icogam/f01bf5a3-e62e-463e-be91-1f3c1ae4969f.jpg',
-  captureImage: '/assets/images/icogam/Capture.png',
+  aboutImage: '/assets/images/icogam/1.png',
+  captureImage: '/assets/images/icogam/2.png',
 }
 
 export const company = {

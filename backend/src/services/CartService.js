@@ -70,7 +70,7 @@ class CartService {
             });
         }
 
-        if (product.stock < parsedQuantity) {
+        if (product.stock === 0 || parsedQuantity > product.stock * 2) {
             throw Object.assign(new Error('Requested quantity exceeds available stock'), {
                 code: 'OUT_OF_STOCK',
                 status: 409
@@ -216,15 +216,15 @@ class CartService {
             }
         });
 
-        const productLookup = new Map(products.map((product) => [product.id, product]));
+        const productLookup = new Map(products.map((product) => [Number(product.id), product]));
         const items = (Array.isArray(cart.items) ? cart.items : []).map((item) => {
             const product = productLookup.get(Number(item.productId));
             const unitPrice = product ? Number(product.price) : Number(item.unitPrice || 0);
             const quantity = Number(item.quantity || 0);
-            const stock = product ? product.stock : item.stock;
+            const stock = product ? product.stock : (item.stock ?? 0);
             return {
                 productId: item.productId,
-                name: product ? product.name : item.name,
+                name: product ? product.name : (item.name || 'Unknown Product'),
                 quantity,
                 unitPrice,
                 stock,

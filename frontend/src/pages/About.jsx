@@ -4,18 +4,20 @@ import SectionHeading from '../components/SectionHeading'
 import Counter from '../components/Counter'
 import PageBanner from '../components/PageBanner'
 import { company, stats, clients, media } from '../data/company'
+import { useLanguage } from '../context/LanguageContext'
 
 function About() {
+  const { t } = useLanguage()
+
   return (
     <div>
       <PageBanner
-        eyebrow="About Us"
-        title="Two Decades of Textile Craftsmanship"
+        eyebrow={t('about_eyebrow')}
+        title={t('about_title')}
         subtitle={company.about}
       />
 
-      {/* Story + image */}
-      < section className="section bg-white" >
+      <section className="section bg-white">
         <div className="container">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <Reveal direction="right">
@@ -28,12 +30,8 @@ function About() {
                 />
                 <div className="absolute -bottom-6 -right-6 hidden md:flex bg-couture-espresso text-white p-6 shadow-lg">
                   <div>
-                    <p className="font-display text-3xl font-semibold text-white">
-                      {company.founded}
-                    </p>
-                    <p className="text-xs uppercase tracking-widest text-white/70 mt-1">
-                      Established
-                    </p>
+                    <p className="font-display text-3xl font-semibold text-white">{company.founded}</p>
+                    <p className="text-xs uppercase tracking-widest text-white/70 mt-1">{t('about_established')}</p>
                   </div>
                 </div>
               </div>
@@ -43,8 +41,8 @@ function About() {
               <div>
                 <SectionHeading
                   align="left"
-                  eyebrow="Our Story"
-                  title="Built on Expertise & Trust"
+                  eyebrow={t('about_story_eyebrow')}
+                  title={t('about_story_title')}
                   subtitle=""
                 />
                 <div className="space-y-4 text-couture-bark leading-relaxed">
@@ -54,9 +52,7 @@ function About() {
                     grown into a recognised manufacturer of home textiles,
                     trusted by clients across the globe.
                   </p>
-                  <p className="text-couture-espresso font-medium">
-                    {company.clientsNote}
-                  </p>
+                  <p className="text-couture-espresso font-medium">{company.clientsNote}</p>
                 </div>
                 <img
                   src={media.captureImage}
@@ -68,32 +64,24 @@ function About() {
             </Reveal>
           </div>
         </div>
-      </section >
+      </section>
 
-      {/* Stats band */}
-      < section className="bg-couture-espresso" >
+      <section className="bg-couture-espresso">
         <div className="container py-12 md:py-16">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
             {stats.map((stat) => (
-              <Counter
-                key={stat.label}
-                end={stat.value}
-                suffix={stat.suffix}
-                label={stat.label}
-                light
-              />
+              <Counter key={stat.label} end={stat.value} suffix={stat.suffix} label={stat.label} light />
             ))}
           </div>
         </div>
-      </section >
+      </section>
 
-      {/* Trusted clients */}
-      < section className="section bg-white" >
+      <section className="section bg-white">
         <div className="container">
           <SectionHeading
-            eyebrow="Trusted By"
-            title="Brands That Choose Us"
-            subtitle="We are proud to manufacture for some of the most respected names in fashion and hospitality."
+            eyebrow={t('about_trusted_eyebrow')}
+            title={t('about_trusted_title')}
+            subtitle={t('about_trusted_subtitle')}
           />
           <Reveal>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 items-center">
@@ -108,31 +96,23 @@ function About() {
             </div>
           </Reveal>
         </div>
-      </section >
+      </section>
 
-      {/* CTA */}
-      < section className="section bg-white border-t border-couture-linen" >
+      <section className="section bg-white border-t border-couture-linen">
         <div className="container text-center">
           <Reveal>
             <h2 className="text-2xl md:text-3xl font-display font-medium text-couture-espresso mb-4">
-              Discover our capabilities
+              {t('about_cta_title')}
             </h2>
-            <p className="text-couture-bark max-w-xl mx-auto mb-8">
-              Explore the full production cycle we offer, from design to
-              delivery.
-            </p>
+            <p className="text-couture-bark max-w-xl mx-auto mb-8">{t('about_cta_subtitle')}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/services" className="btn btn-primary">
-                Our Services
-              </Link>
-              <Link to="/contact" className="btn btn-secondary">
-                Contact Us
-              </Link>
+              <Link to="/services" className="btn btn-primary">{t('about_our_services')}</Link>
+              <Link to="/contact" className="btn btn-secondary">{t('about_contact_us')}</Link>
             </div>
           </Reveal>
         </div>
-      </section >
-    </div >
+      </section>
+    </div>
   )
 }
 

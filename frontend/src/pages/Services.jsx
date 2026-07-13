@@ -4,43 +4,35 @@ import SectionHeading from '../components/SectionHeading'
 import Counter from '../components/Counter'
 import PageBanner from '../components/PageBanner'
 import { services, productRange, stats, company } from '../data/company'
+import { useLanguage } from '../context/LanguageContext'
 
 function Services() {
+  const { t } = useLanguage()
+
   return (
     <div>
       <PageBanner
-        eyebrow="What We Do"
-        title="End-to-End Textile Manufacturing"
-        subtitle="From the first sketch to the final quality check, our integrated atelier guides your project through every stage of production with precision and care."
+        eyebrow={t('services_eyebrow')}
+        title={t('services_title')}
+        subtitle={t('services_subtitle')}
       />
 
-      {/* Services grid */}
       <section className="section bg-white">
         <div className="container">
           <SectionHeading
-            eyebrow="Our Services"
-            title="A Complete Production Cycle"
-            subtitle="Each step is handled in-house by specialised teams, giving you a single, reliable partner for your textile collections."
+            eyebrow={t('services_section_eyebrow')}
+            title={t('services_section_title')}
+            subtitle={t('services_section_subtitle')}
           />
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {services.map((service, i) => (
               <Reveal key={service.id} delay={(i % 3) * 100}>
                 <div className="card h-full p-7 hover-lift group">
                   <div className="w-16 h-16 mb-5 flex items-center justify-center rounded-full bg-white p-3 group-hover:bg-couture-espresso transition-colors duration-300">
-                    <img
-                      src={service.image}
-                      alt={service.title}
-                      loading="lazy"
-                      className="w-full h-full object-contain"
-                    />
+                    <img src={service.image} alt={service.title} loading="lazy" className="w-full h-full object-contain" />
                   </div>
-                  <h3 className="font-display text-xl font-medium text-couture-espresso mb-3">
-                    {service.title}
-                  </h3>
-                  <p className="text-sm text-couture-bark leading-relaxed">
-                    {service.description}
-                  </p>
+                  <h3 className="font-display text-xl font-medium text-couture-espresso mb-3">{service.title}</h3>
+                  <p className="text-sm text-couture-bark leading-relaxed">{service.description}</p>
                 </div>
               </Reveal>
             ))}
@@ -48,12 +40,11 @@ function Services() {
         </div>
       </section>
 
-      {/* Product range */}
       <section className="section bg-white border-t border-couture-linen">
         <div className="container">
           <SectionHeading
-            eyebrow="Our Product Range"
-            title="What We Manufacture"
+            eyebrow={t('services_range_eyebrow')}
+            title={t('services_range_title')}
             align="center"
           />
           <Reveal>
@@ -71,37 +62,25 @@ function Services() {
         </div>
       </section>
 
-      {/* Stats band */}
       <section className="bg-couture-espresso">
         <div className="container py-12 md:py-16">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
             {stats.map((stat) => (
-              <Counter
-                key={stat.label}
-                end={stat.value}
-                suffix={stat.suffix}
-                label={stat.label}
-                light
-              />
+              <Counter key={stat.label} end={stat.value} suffix={stat.suffix} label={stat.label} light />
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
       <section className="section bg-white">
         <div className="container">
           <Reveal>
             <div className="card p-10 md:p-14 text-center bg-white">
               <h2 className="text-2xl md:text-3xl font-display font-medium text-couture-espresso mb-4">
-                Ready to start your next collection?
+                {t('services_cta_title')}
               </h2>
-              <p className="text-couture-bark max-w-xl mx-auto mb-8">
-                {company.clientsNote}
-              </p>
-              <Link to="/contact" className="btn btn-primary">
-                Get in Touch
-              </Link>
+              <p className="text-couture-bark max-w-xl mx-auto mb-8">{company.clientsNote}</p>
+              <Link to="/contact" className="btn btn-primary">{t('services_cta_btn')}</Link>
             </div>
           </Reveal>
         </div>

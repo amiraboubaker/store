@@ -4,12 +4,14 @@ import { formatPrice } from '../utils/helpers'
 import Loading from '../components/Loading'
 import ErrorState from '../components/ErrorState'
 import { products } from '../data/products'
+import { useLanguage } from '../context/LanguageContext'
 
 function ProductDetail() {
   const { id } = useParams()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [quantity, setQuantity] = useState(1)
+  const { t } = useLanguage()
 
   const product = products.find((p) => p.id === id)
 
@@ -17,7 +19,6 @@ function ProductDetail() {
     setLoading(true)
     setError(false)
     setQuantity(1)
-
     const timer = setTimeout(() => setLoading(false), 500)
     return () => clearTimeout(timer)
   }, [id])
@@ -25,9 +26,7 @@ function ProductDetail() {
   if (loading) {
     return (
       <div className="section bg-white">
-        <div className="container">
-          <Loading count={1} />
-        </div>
+        <div className="container"><Loading count={1} /></div>
       </div>
     )
   }
@@ -36,7 +35,7 @@ function ProductDetail() {
     return (
       <div className="section bg-white">
         <div className="container">
-          <ErrorState message={!product ? 'Product not found.' : 'Failed to load product.'} />
+          <ErrorState message={!product ? t('detail_not_found') : t('detail_failed')} />
         </div>
       </div>
     )
@@ -46,29 +45,21 @@ function ProductDetail() {
     <div className="section bg-white">
       <div className="container">
         <nav className="flex items-center space-x-2 text-sm text-couture-bark mb-8">
-          <Link to="/" className="hover:text-couture-espresso">Home</Link>
+          <Link to="/" className="hover:text-couture-espresso">{t('detail_home')}</Link>
           <span>/</span>
-          <Link to="/products" className="hover:text-couture-espresso">Products</Link>
+          <Link to="/products" className="hover:text-couture-espresso">{t('detail_products')}</Link>
           <span>/</span>
           <span className="text-couture-espresso">{product.name}</span>
         </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           <div className="aspect-[4/3] bg-couture-linen overflow-hidden">
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-full object-cover"
-            />
+            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
           </div>
 
           <div className="flex flex-col">
-            <p className="text-sm text-couture-bark uppercase tracking-widest mb-3">
-              {product.category}
-            </p>
-            <h1 className="text-3xl md:text-4xl font-display font-medium text-couture-espresso mb-4">
-              {product.name}
-            </h1>
+            <p className="text-sm text-couture-bark uppercase tracking-widest mb-3">{product.category}</p>
+            <h1 className="text-3xl md:text-4xl font-display font-medium text-couture-espresso mb-4">{product.name}</h1>
 
             <div className="flex items-center space-x-4 mb-6">
               <div className="flex items-center space-x-1">
@@ -83,34 +74,29 @@ function ProductDetail() {
                   </svg>
                 ))}
               </div>
-              <span className="text-sm text-couture-bark">{product.rating} out of 5</span>
+              <span className="text-sm text-couture-bark">{product.rating} {t('detail_rating')}</span>
             </div>
 
-            <p className="text-2xl font-semibold text-couture-espresso mb-6">
-              {formatPrice(product.price)}
-            </p>
-
-            <p className="text-couture-bark leading-relaxed mb-8">
-              {product.description}
-            </p>
+            <p className="text-2xl font-semibold text-couture-espresso mb-6">{formatPrice(product.price)}</p>
+            <p className="text-couture-bark leading-relaxed mb-8">{product.description}</p>
 
             <div className="space-y-3 mb-8 text-sm">
               <div className="flex">
-                <span className="w-32 text-couture-bark">Material</span>
+                <span className="w-32 text-couture-bark">{t('detail_material')}</span>
                 <span className="text-couture-espresso">{product.material}</span>
               </div>
               <div className="flex">
-                <span className="w-32 text-couture-bark">Weight</span>
+                <span className="w-32 text-couture-bark">{t('detail_weight')}</span>
                 <span className="text-couture-espresso">{product.weight}</span>
               </div>
               <div className="flex">
-                <span className="w-32 text-couture-bark">Width</span>
+                <span className="w-32 text-couture-bark">{t('detail_width')}</span>
                 <span className="text-couture-espresso">{product.width}</span>
               </div>
             </div>
 
             <div className="mb-8">
-              <p className="label mb-3">Available Colors</p>
+              <p className="label mb-3">{t('detail_colors')}</p>
               <div className="flex flex-wrap gap-3">
                 {product.colors.map((color) => (
                   <span
@@ -128,7 +114,7 @@ function ProductDetail() {
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   className="px-4 py-3 text-couture-bark hover:text-couture-espresso transition-colors"
-                  aria-label="Decrease quantity"
+                  aria-label={t('detail_decrease')}
                 >
                   -
                 </button>
@@ -138,14 +124,12 @@ function ProductDetail() {
                 <button
                   onClick={() => setQuantity(quantity + 1)}
                   className="px-4 py-3 text-couture-bark hover:text-couture-espresso transition-colors"
-                  aria-label="Increase quantity"
+                  aria-label={t('detail_increase')}
                 >
                   +
                 </button>
               </div>
-              <button className="flex-1 btn btn-primary">
-                Add to Cart
-              </button>
+              <button className="flex-1 btn btn-primary">{t('detail_add_to_cart')}</button>
             </div>
 
             {product.inStock ? (
@@ -153,10 +137,10 @@ function ProductDetail() {
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                In Stock
+                {t('detail_in_stock')}
               </p>
             ) : (
-              <p className="text-sm text-couture-bark">Out of Stock</p>
+              <p className="text-sm text-couture-bark">{t('detail_out_of_stock')}</p>
             )}
           </div>
         </div>

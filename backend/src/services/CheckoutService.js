@@ -33,7 +33,7 @@ class CheckoutService {
             where: { id: { [Op.in]: productIds } }
         });
 
-        const productMap = new Map(products.map((product) => [product.id, product]));
+        const productMap = new Map(products.map((product) => [Number(product.id), product]));
 
         const validationErrors = [];
         for (const item of items) {

@@ -1,13 +1,30 @@
-import { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useState, useEffect, useRef } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { media } from '../data/company'
+import { useLanguage } from '../context/LanguageContext'
+import { useAuth } from '../context/AuthContext'
+
+const LANGUAGES = [
+  { code: 'fr', label: 'FR' },
+  { code: 'en', label: 'EN' },
+  { code: 'ar', label: 'AR' },
+]
 
 function Header() {
   const [cartCount, setCartCount] = useState(3)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [progress, setProgress] = useState(0)
+  const [langOpen, setLangOpen] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
+  const langRef = useRef(null)
+  const profileRef = useRef(null)
   const location = useLocation()
+  const navigate = useNavigate()
+  const { lang, setLang, t } = useLanguage()
+  const { user, logout } = useAuth()
+
+  const currentLang = LANGUAGES.find((l) => l.code === lang)
 
   useEffect(() => {
     const onScroll = () => {
@@ -21,12 +38,21 @@ function Header() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (langRef.current && !langRef.current.contains(e.target)) setLangOpen(false)
+      if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
   const navItems = [
-    { name: 'Home', path: '/' },
-    { name: 'About', path: '/about' },
-    { name: 'Products', path: '/products' },
-    { name: 'Services', path: '/services' },
-    { name: 'Contact', path: '/contact' },
+    { name: t('nav_home'), path: '/' },
+    { name: t('nav_about'), path: '/about' },
+    { name: t('nav_products'), path: '/products' },
+    { name: t('nav_services'), path: '/services' },
+    { name: t('nav_contact'), path: '/contact' },
   ]
 
   const isActive = (path) =>
@@ -34,10 +60,8 @@ function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-couture-linen transition-shadow duration-300 ${scrolled ? 'shadow-sm' : ''
-        }`}
+      className={`sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-couture-linen transition-shadow duration-300 ${scrolled ? 'shadow-sm' : ''}`}
     >
-      {/* Animated scroll-progress bar */}
       <div
         className="absolute top-0 left-0 h-0.5 bg-couture-gold transition-[width] duration-150 ease-out"
         style={{ width: `${progress}%` }}
@@ -55,25 +79,27 @@ function Header() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`group relative text-sm tracking-wide transition-colors py-1 ${isActive(item.path)
-                  ? 'text-couture-espresso font-medium'
-                  : 'text-couture-bark hover:text-couture-espresso'
-                  }`}
+                className={`group relative text-sm tracking-wide transition-colors py-1 ${
+                  isActive(item.path)
+                    ? 'text-couture-espresso font-medium'
+                    : 'text-couture-bark hover:text-couture-espresso'
+                }`}
               >
                 {item.name}
                 <span
-                  className={`absolute left-0 -bottom-0.5 h-px bg-couture-gold transition-all duration-300 ${isActive(item.path) ? 'w-full' : 'w-0 group-hover:w-full'
-                    }`}
+                  className={`absolute left-0 -bottom-0.5 h-px bg-couture-gold transition-all duration-300 ${
+                    isActive(item.path) ? 'w-full' : 'w-0 group-hover:w-full'
+                  }`}
                 />
               </Link>
             ))}
           </nav>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             <Link
               to="/cart"
               className="relative p-2 text-couture-bark hover:text-couture-espresso transition-colors"
-              aria-label="Shopping cart"
+              aria-label={t('nav_cart_label')}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -84,6 +110,91 @@ function Header() {
                 </span>
               )}
             </Link>
+
+            {/* Profile Dropdown */}
+            <div className="relative" ref={profileRef}>
+              <button
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="p-2 text-couture-bark hover:text-couture-espresso transition-colors"
+                aria-label="Account"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </button>
+              {profileOpen && (
+                <div className="absolute right-0 mt-1 w-44 bg-white border border-couture-linen shadow-md z-50">
+                  {user ? (
+                    <>
+                      <div className="px-4 py-3 border-b border-couture-linen">
+                        <p className="text-xs text-couture-bark truncate">{user.firstName} {user.lastName}</p>
+                        <p className="text-xs text-couture-bark truncate opacity-60">{user.email}</p>
+                      </div>
+                      <button
+                        onClick={() => { logout(); setProfileOpen(false); navigate('/') }}
+                        className="w-full text-left px-4 py-2.5 text-sm text-couture-bark hover:bg-couture-linen/50 hover:text-couture-espresso transition-colors"
+                      >
+                        {t('auth_logout')}
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to="/login"
+                        onClick={() => setProfileOpen(false)}
+                        className="block px-4 py-2.5 text-sm text-couture-bark hover:bg-couture-linen/50 hover:text-couture-espresso transition-colors"
+                      >
+                        {t('auth_login')}
+                      </Link>
+                      <Link
+                        to="/register"
+                        onClick={() => setProfileOpen(false)}
+                        className="block px-4 py-2.5 text-sm text-couture-bark hover:bg-couture-linen/50 hover:text-couture-espresso transition-colors"
+                      >
+                        {t('auth_register')}
+                      </Link>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Language Dropdown */}
+            <div className="relative" ref={langRef}>
+              <button
+                onClick={() => setLangOpen(!langOpen)}
+                className="flex items-center space-x-1.5 px-2.5 py-1.5 text-sm text-couture-bark hover:text-couture-espresso border border-transparent hover:border-couture-linen transition-all"
+                aria-label="Select language"
+              >
+                <span className="font-medium">{currentLang.label}</span>
+                <svg
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${langOpen ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {langOpen && (
+                <div className="absolute right-0 mt-1 w-fit min-w-[4rem] bg-white border border-couture-linen shadow-md z-50">
+                  {LANGUAGES.map((l) => (
+                    <button
+                      key={l.code}
+                      onClick={() => { setLang(l.code); setLangOpen(false) }}
+                      className={`w-full flex items-center justify-center px-3 py-2 text-sm transition-colors ${
+                        lang === l.code
+                          ? 'bg-couture-linen text-couture-espresso font-medium'
+                          : 'text-couture-bark hover:bg-couture-linen/50 hover:text-couture-espresso'
+                      }`}
+                    >
+                      <span className="font-medium">{l.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <button
               className="lg:hidden p-2 text-couture-bark hover:text-couture-espresso"
@@ -108,10 +219,9 @@ function Header() {
                 key={item.path}
                 to={item.path}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block py-3 text-sm tracking-wide transition-colors ${isActive(item.path)
-                  ? 'text-couture-espresso font-medium'
-                  : 'text-couture-bark'
-                  }`}
+                className={`block py-3 text-sm tracking-wide transition-colors ${
+                  isActive(item.path) ? 'text-couture-espresso font-medium' : 'text-couture-bark'
+                }`}
               >
                 {item.name}
               </Link>

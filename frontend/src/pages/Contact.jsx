@@ -3,6 +3,17 @@ import Reveal from '../components/Reveal'
 import SectionHeading from '../components/SectionHeading'
 import PageBanner from '../components/PageBanner'
 import { contact } from '../data/company'
+import { useLanguage } from '../context/LanguageContext'
+
+const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+
+function validate(form, t) {
+  const errors = {}
+  if (!form.name.trim()) errors.name = t('contact_err_name')
+  if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = t('contact_err_email')
+  if (!form.message.trim() || form.message.trim().length < 10) errors.message = t('contact_err_message')
+  return errors
+}
 
 function ContactInfoCard({ icon, label, value, href }) {
   const content = (
@@ -11,48 +22,66 @@ function ContactInfoCard({ icon, label, value, href }) {
         {icon}
       </div>
       <div>
-        <p className="text-xs uppercase tracking-widest text-couture-bark mb-1">
-          {label}
-        </p>
+        <p className="text-xs uppercase tracking-widest text-couture-bark mb-1">{label}</p>
         <p className="text-couture-espresso font-medium">{value}</p>
       </div>
     </div>
   )
 
   return href ? (
-    <a href={href} className="block hover:opacity-70 transition-opacity">
-      {content}
-    </a>
-  ) : (
-    content
-  )
+    <a href={href} className="block hover:opacity-70 transition-opacity">{content}</a>
+  ) : content
 }
 
 function Contact() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
   const [sent, setSent] = useState(false)
+  const [errors, setErrors] = useState({})
+  const [serverError, setServerError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const { t } = useLanguage()
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+    setErrors((prev) => ({ ...prev, [e.target.name]: '' }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    setSent(true)
+    const fieldErrors = validate(form, t)
+    if (Object.keys(fieldErrors).length) { setErrors(fieldErrors); return }
+    setLoading(true)
+    setServerError('')
+    try {
+      const res = await fetch(`${API}/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        setServerError(data.errors?.[0]?.msg || data.message || t('contact_err_server'))
+        return
+      }
+      setSent(true)
+    } catch {
+      setServerError(t('contact_err_server'))
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <div>
       <PageBanner
-        eyebrow="Contact"
-        title="Let's Create Together"
-        subtitle="Whether you have a ready project or just an idea, our team is here to help you bring it to life."
+        eyebrow={t('contact_eyebrow')}
+        title={t('contact_title')}
+        subtitle={t('contact_subtitle')}
       />
 
       <section className="section bg-white">
         <div className="container">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-            {/* Form */}
             <Reveal direction="right">
               <div className="card p-7 md:p-10">
                 {sent ? (
@@ -63,89 +92,54 @@ function Contact() {
                       </svg>
                     </div>
                     <h2 className="font-display text-2xl font-medium text-couture-espresso mb-2">
-                      Message Sent
+                      {t('contact_sent_title')}
                     </h2>
                     <p className="text-couture-bark mb-6">
-                      Thank you, {form.name || 'friend'}. We'll get back to you shortly.
+                      {t('contact_sent_subtitle')} {form.name || 'friend'}. {t('contact_sent_note')}
                     </p>
                     <button
-                      onClick={() => {
-                        setSent(false)
-                        setForm({ name: '', email: '', subject: '', message: '' })
-                      }}
+                      onClick={() => { setSent(false); setForm({ name: '', email: '', subject: '', message: '' }) }}
                       className="btn btn-secondary"
                     >
-                      Send Another
+                      {t('contact_send_another')}
                     </button>
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-5">
+                    {serverError && <p className="text-red-600 text-sm">{serverError}</p>}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                       <div>
-                        <label htmlFor="name" className="label">Name</label>
-                        <input
-                          id="name"
-                          name="name"
-                          type="text"
-                          required
-                          value={form.name}
-                          onChange={handleChange}
-                          className="input"
-                          placeholder="Your name"
-                        />
+                        <label htmlFor="name" className="label">{t('contact_name')}</label>
+                        <input id="name" name="name" type="text" value={form.name} onChange={handleChange} className="input" placeholder={t('contact_name_placeholder')} />
+                        {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                       </div>
                       <div>
-                        <label htmlFor="email" className="label">Email</label>
-                        <input
-                          id="email"
-                          name="email"
-                          type="email"
-                          required
-                          value={form.email}
-                          onChange={handleChange}
-                          className="input"
-                          placeholder="you@studio.com"
-                        />
+                        <label htmlFor="email" className="label">{t('contact_email')}</label>
+                        <input id="email" name="email" type="email" value={form.email} onChange={handleChange} className="input" placeholder={t('contact_email_placeholder')} />
+                        {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                       </div>
                     </div>
                     <div>
-                      <label htmlFor="subject" className="label">Subject</label>
-                      <input
-                        id="subject"
-                        name="subject"
-                        type="text"
-                        value={form.subject}
-                        onChange={handleChange}
-                        className="input"
-                        placeholder="Project enquiry"
-                      />
+                      <label htmlFor="subject" className="label">{t('contact_subject')}</label>
+                      <input id="subject" name="subject" type="text" value={form.subject} onChange={handleChange} className="input" placeholder={t('contact_subject_placeholder')} />
                     </div>
                     <div>
-                      <label htmlFor="message" className="label">Message</label>
-                      <textarea
-                        id="message"
-                        name="message"
-                        rows={5}
-                        required
-                        value={form.message}
-                        onChange={handleChange}
-                        className="input resize-none"
-                        placeholder="Tell us about your project..."
-                      />
+                      <label htmlFor="message" className="label">{t('contact_message')}</label>
+                      <textarea id="message" name="message" rows={5} value={form.message} onChange={handleChange} className="input resize-none" placeholder={t('contact_message_placeholder')} />
+                      {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message}</p>}
                     </div>
-                    <button type="submit" className="btn btn-primary w-full">
-                      Send Message
+                    <button type="submit" disabled={loading} className="btn btn-primary w-full">
+                      {loading ? '...' : t('contact_send')}
                     </button>
                   </form>
                 )}
               </div>
             </Reveal>
 
-            {/* Info + map */}
             <Reveal direction="left" className="space-y-8">
               <div className="space-y-6">
                 <ContactInfoCard
-                  label="Address"
+                  label={t('contact_address')}
                   value={contact.address}
                   icon={
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,7 +149,7 @@ function Contact() {
                   }
                 />
                 <ContactInfoCard
-                  label="Phone"
+                  label={t('contact_phone')}
                   value={contact.phone}
                   href={contact.phoneHref}
                   icon={
@@ -165,7 +159,7 @@ function Contact() {
                   }
                 />
                 <ContactInfoCard
-                  label="Email"
+                  label={t('contact_email')}
                   value={contact.email}
                   href={contact.emailHref}
                   icon={
@@ -174,16 +168,6 @@ function Contact() {
                     </svg>
                   }
                 />
-                {/* <ContactInfoCard
-                  label="LinkedIn"
-                  value="Follow our company"
-                  href={contact.linkedin}
-                  icon={
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M19 0h-14C2.24 0 0 2.24 0 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5V5c0-2.76-2.24-5-5-5zM7.12 20.45H3.56V9h3.56v11.45zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zM20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28z" />
-                    </svg>
-                  }
-                /> */}
               </div>
 
               <div className="border border-couture-linen overflow-hidden aspect-[4/3] sm:aspect-[16/10]">
