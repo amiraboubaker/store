@@ -11,8 +11,8 @@ function Dashboard() {
   ]
 
   const wishlistItems = [
-    { name: 'Italian Silk Charmeuse', price: 45.00, image: 'https://images.unsplash.com/photo-1558171813-4c088753afef?w=200&h=200&fit=crop' },
-    { name: 'Hand-Dyed Organza', price: 32.00, image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200&h=200&fit=crop' },
+    { name: 'Italian Silk Charmeuse', price: 45.00, image: '/assets/images/icogam/image1.jpg' },
+    { name: 'Hand-Dyed Organza', price: 32.00, image: '/assets/images/icogam/Capture.png' },
   ]
 
   const tabs = [
@@ -35,7 +35,7 @@ function Dashboard() {
   }
 
   return (
-    <div className="section bg-couture-cream">
+    <div className="section bg-white">
       <div className="container">
         <h1 className="text-3xl md:text-4xl font-display font-medium text-couture-espresso mb-8">
           Your Account
@@ -51,7 +51,7 @@ function Dashboard() {
                   className={`w-full text-left px-4 py-3 text-sm transition-colors ${
                     activeTab === tab.id
                       ? 'bg-couture-espresso text-white'
-                      : 'text-couture-bark hover:bg-couture-ivory'
+                      : 'text-couture-bark hover:bg-couture-linen'
                   }`}
                 >
                   {tab.label}

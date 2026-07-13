@@ -32,7 +32,7 @@ function Products() {
   }
 
   return (
-    <div className="section bg-couture-cream">
+    <div className="section bg-white">
       <div className="container">
         <div className="text-center mb-10">
           <h1 className="text-3xl md:text-4xl font-display font-medium text-couture-espresso mb-4">

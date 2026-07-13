@@ -24,7 +24,7 @@ function ProductDetail() {
 
   if (loading) {
     return (
-      <div className="section bg-couture-cream">
+      <div className="section bg-white">
         <div className="container">
           <Loading count={1} />
         </div>
@@ -34,7 +34,7 @@ function ProductDetail() {
 
   if (error || !product) {
     return (
-      <div className="section bg-couture-cream">
+      <div className="section bg-white">
         <div className="container">
           <ErrorState message={!product ? 'Product not found.' : 'Failed to load product.'} />
         </div>
@@ -43,7 +43,7 @@ function ProductDetail() {
   }
 
   return (
-    <div className="section bg-couture-cream">
+    <div className="section bg-white">
       <div className="container">
         <nav className="flex items-center space-x-2 text-sm text-couture-bark mb-8">
           <Link to="/" className="hover:text-couture-espresso">Home</Link>

@@ -33,7 +33,7 @@ function Cart() {
 
   if (items.length === 0) {
     return (
-      <div className="section bg-couture-cream">
+      <div className="section bg-white">
         <div className="container">
           <div className="text-center py-16">
             <svg className="w-16 h-16 text-couture-taupe mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,7 +55,7 @@ function Cart() {
   }
 
   return (
-    <div className="section bg-couture-cream">
+    <div className="section bg-white">
       <div className="container">
         <h1 className="text-3xl md:text-4xl font-display font-medium text-couture-espresso mb-8">
           Shopping Cart

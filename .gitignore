@@ -39,14 +39,15 @@ logs/
 tmp/
 temp/
 
+# Uploads (stored in backend/uploads)
+backend/uploads/*
+!backend/uploads/.gitkeep
+
 # Build outputs
 dist/
 build/
 
-# Docker
-docker-compose*.yml
-.dockerignore
-docker/
+# Docker Images
 
 # Database
 *.sqlite
@@ -56,3 +57,6 @@ database.sqlite
 *.pem
 *.key
 *.crt
+
+# Resources 
+icogam/

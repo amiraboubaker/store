@@ -7,10 +7,10 @@ function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
           <div className="md:col-span-2">
             <h3 className="font-display text-xl font-semibold text-white mb-3">
-              Couture Supplies
+              Rayes Modes
             </h3>
             <p className="text-sm text-couture-taupe max-w-md leading-relaxed">
-              Premium fabrics, trims, and notions for the discerning maker. 
+              Premium fabrics, trims, and notions for the discerning maker.
               Sourced from the world's finest ateliers, delivered to your studio.
             </p>
           </div>
@@ -45,12 +45,22 @@ function Footer() {
 
           <div>
             <h4 className="text-sm font-medium text-white uppercase tracking-wider mb-4">
-              Account
+              Company
             </h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/cart" className="text-sm text-couture-taupe hover:text-white transition-colors">
-                  Cart
+                <Link to="/about" className="text-sm text-couture-taupe hover:text-white transition-colors">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link to="/services" className="text-sm text-couture-taupe hover:text-white transition-colors">
+                  Services
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-sm text-couture-taupe hover:text-white transition-colors">
+                  Contact
                 </Link>
               </li>
               <li>
@@ -58,19 +68,13 @@ function Footer() {
                   Dashboard
                 </Link>
               </li>
-              <li>
-                <span className="text-sm text-couture-taupe">Contact</span>
-              </li>
-              <li>
-                <span className="text-sm text-couture-taupe">Shipping</span>
-              </li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-couture-coffee mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-couture-bark">
-            &copy; 2024 Couture Supplies. All rights reserved.
+            &copy; 2026 Rayes Modes. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <span className="text-sm text-couture-bark">Privacy</span>

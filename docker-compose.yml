@@ -1,0 +1,45 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/Dockerfile.frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/Dockerfile.backend
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend/uploads:/app/uploads
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DB_DIALECT=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=store_user
+      - DB_PASSWORD=store_password
+      - DB_NAME=store
+      - JWT_SECRET=CHANGE_ME_IN_PRODUCTION
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=store
+      - MYSQL_USER=store_user
+      - MYSQL_PASSWORD=store_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

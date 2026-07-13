@@ -1,41 +1,70 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { media } from '../data/company'
 
 function Header() {
   const [cartCount, setCartCount] = useState(3)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const [progress, setProgress] = useState(0)
   const location = useLocation()
+
+  useEffect(() => {
+    const onScroll = () => {
+      const h = document.documentElement
+      const max = h.scrollHeight - h.clientHeight
+      setScrolled(window.scrollY > 8)
+      setProgress(max > 0 ? (window.scrollY / max) * 100 : 0)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   const navItems = [
     { name: 'Home', path: '/' },
+    { name: 'About', path: '/about' },
     { name: 'Products', path: '/products' },
-    { name: 'Dashboard', path: '/dashboard' },
+    { name: 'Services', path: '/services' },
+    { name: 'Contact', path: '/contact' },
   ]
 
-  const isActive = (path) => location.pathname === path
+  const isActive = (path) =>
+    path === '/' ? location.pathname === '/' : location.pathname.startsWith(path)
 
   return (
-    <header className="sticky top-0 z-50 bg-couture-cream/95 backdrop-blur-sm border-b border-couture-linen">
+    <header
+      className={`sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-couture-linen transition-shadow duration-300 ${scrolled ? 'shadow-sm' : ''
+        }`}
+    >
+      {/* Animated scroll-progress bar */}
+      <div
+        className="absolute top-0 left-0 h-0.5 bg-couture-gold transition-[width] duration-150 ease-out"
+        style={{ width: `${progress}%` }}
+      />
       <div className="container">
         <div className="flex items-center justify-between h-16 md:h-20">
           <Link to="/" className="flex items-center space-x-2">
             <span className="font-display text-xl md:text-2xl font-semibold text-couture-espresso tracking-tight">
-              Couture Supplies
+              Rayes Modes
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden lg:flex items-center space-x-8">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`text-sm tracking-wide transition-colors ${
-                  isActive(item.path)
-                    ? 'text-couture-espresso font-medium'
-                    : 'text-couture-bark hover:text-couture-espresso'
-                }`}
+                className={`group relative text-sm tracking-wide transition-colors py-1 ${isActive(item.path)
+                  ? 'text-couture-espresso font-medium'
+                  : 'text-couture-bark hover:text-couture-espresso'
+                  }`}
               >
                 {item.name}
+                <span
+                  className={`absolute left-0 -bottom-0.5 h-px bg-couture-gold transition-all duration-300 ${isActive(item.path) ? 'w-full' : 'w-0 group-hover:w-full'
+                    }`}
+                />
               </Link>
             ))}
           </nav>
@@ -57,7 +86,7 @@ function Header() {
             </Link>
 
             <button
-              className="md:hidden p-2 text-couture-bark hover:text-couture-espresso"
+              className="lg:hidden p-2 text-couture-bark hover:text-couture-espresso"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -73,17 +102,16 @@ function Header() {
         </div>
 
         {mobileMenuOpen && (
-          <nav className="md:hidden py-4 border-t border-couture-linen animate-fade-in">
+          <nav className="lg:hidden py-4 border-t border-couture-linen animate-fade-in">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block py-3 text-sm tracking-wide transition-colors ${
-                  isActive(item.path)
-                    ? 'text-couture-espresso font-medium'
-                    : 'text-couture-bark'
-                }`}
+                className={`block py-3 text-sm tracking-wide transition-colors ${isActive(item.path)
+                  ? 'text-couture-espresso font-medium'
+                  : 'text-couture-bark'
+                  }`}
               >
                 {item.name}
               </Link>
