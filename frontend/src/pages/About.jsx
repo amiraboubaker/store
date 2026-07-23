@@ -14,7 +14,7 @@ function About() {
       <PageBanner
         eyebrow={t('about_eyebrow')}
         title={t('about_title')}
-        subtitle={company.about}
+        subtitle={t('company_about')}
       />
 
       <section className="section bg-white">
@@ -46,13 +46,9 @@ function About() {
                   subtitle=""
                 />
                 <div className="space-y-4 text-couture-bark leading-relaxed">
-                  <p>{company.aboutExtended}</p>
-                  <p>
-                    Founded by {company.founder} in {company.location}, we have
-                    grown into a recognised manufacturer of home textiles,
-                    trusted by clients across the globe.
-                  </p>
-                  <p className="text-couture-espresso font-medium">{company.clientsNote}</p>
+                  <p>{t('company_about_extended')}</p>
+                  <p>{t('about_story_body')}</p>
+                  <p className="text-couture-espresso font-medium">{t('company_clients_note')}</p>
                 </div>
                 <img
                   src={media.captureImage}
@@ -70,7 +66,7 @@ function About() {
         <div className="container py-12 md:py-16">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
             {stats.map((stat) => (
-              <Counter key={stat.label} end={stat.value} suffix={stat.suffix} label={stat.label} light />
+              <Counter key={stat.labelKey} end={stat.value} suffix={stat.suffix} label={t(stat.labelKey)} light />
             ))}
           </div>
         </div>

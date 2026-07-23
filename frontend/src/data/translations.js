@@ -126,7 +126,17 @@ const translations = {
     cart_total: 'Total',
     cart_checkout: 'Passer à la Caisse',
 
-    // Footer
+    // Product card
+    product_featured: 'En Vedette',
+    product_quick_preview: 'Aperçu Rapide',
+    product_try_again: 'Réessayer',
+
+    // Category filters
+    category_all: 'Tous',
+    category_fabric: 'Tissus',
+    category_trims: 'Garnitures',
+    category_notions: 'Mercerie',
+
     footer_desc: 'Tissus, garnitures et mercerie premium pour le créateur exigeant. Sourcés dans les meilleurs ateliers mondiaux, livrés dans votre studio.',
     footer_shop: 'Boutique',
     footer_all_products: 'Tous les Produits',
@@ -142,6 +152,45 @@ const translations = {
     footer_privacy: 'Confidentialité',
     footer_terms: 'Conditions',
     footer_accessibility: 'Accessibilité',
+
+    // About story body
+    about_story_body: 'Fondée par Bessem Gam à Monastir, Tunisie, nous sommes devenus un fabricant reconnu de textiles de maison, apprécié par des clients du monde entier.',
+    company_about: 'Couture Supplies est spécialisée dans la fabrication de textiles de maison, de produits de santé et d\'emballages en tissu et non-tissé. Depuis notre fondation en 2005 par Hafedh Gam à Sahline, Monastir, nous avons bâti une réputation mondiale pour des textiles d\'exception.',
+    company_about_extended: 'Notre expertise en tant que sous-traitant pour le linge de maison, l\'hôtellerie, le bain et les textiles hospitaliers nous distingue par notre productivité, notre réactivité et notre qualité. Nous nous engageons à fournir des produits répondant aux normes les plus strictes et aux besoins spécifiques de nos clients nationaux et internationaux.',
+    company_clients_note: 'Par notre engagement envers l\'excellence, nous avons gagné la confiance de marques renommées telles que Jacquard Français, Jalla, Yves Delorme, Ralph Lauren et Air France.',
+
+    // Stats
+    stat_experience: 'Années d\'Expérience',
+    stat_employees: 'Employés Qualifiés',
+    stat_clients: 'Clients Mondiaux',
+
+    // Services
+    service_study_title: 'Service Étude',
+    service_study_desc: 'Sur la base de vos directives, notre bureau d\'analyse vérifie la faisabilité de chaque projet et fournit les conseils nécessaires pour le concrétiser.',
+    service_design_title: 'Création de Modèles',
+    service_design_desc: 'Nous collaborons avec vous pour concevoir des modèles originaux et innovants qui répondent à vos besoins spécifiques et captivent votre marché cible.',
+    service_cutting_title: 'Coupe Textile',
+    service_cutting_desc: 'Notre atelier de coupe traite les matières grande largeur, spécialisé dans le linge de lit, de table et de bain pour alimenter nos lignes de production.',
+    service_manufacturing_title: 'Fabrication',
+    service_manufacturing_desc: 'Notre atelier est équipé des machines les plus récentes et avancées de marques renommées, garantissant que chaque pièce correspond à vos spécifications.',
+    service_quality_title: 'Contrôle Qualité',
+    service_quality_desc: 'Chaque produit est inspecté par des experts qualifiés pour garantir la conformité aux normes du client et à notre propre savoir-faire.',
+    service_embroidery_title: 'Broderie & Personnalisation',
+    service_embroidery_desc: 'Ajoutez une touche unique avec notre service de broderie et de personnalisation, transformant vos produits en pièces mémorables et uniques.',
+    service_storage_title: 'Stockage',
+    service_storage_desc: 'Nous offrons un stockage et une gestion supplémentaires de matières premières pour certains clients, réduisant les délais d\'une semaine et optimisant les coûts de transport.',
+
+    // Product range
+    range_duvets: 'Couettes',
+    range_bedspreads: 'Couvre-lits',
+    range_bed_sets: 'Parures de Lit',
+    range_fitted_sheets: 'Draps Housse',
+    range_flat_sheets: 'Draps Plats',
+    range_pillows: 'Oreillers',
+    range_pillowcases: 'Taies d\'Oreiller',
+    range_embroideries: 'Broderies',
+    range_screen_printing: 'Sérigraphie',
+    range_custom_dyeing: 'Teinture Personnalisée',
   },
 
   en: {
@@ -277,6 +326,45 @@ const translations = {
     footer_privacy: 'Privacy',
     footer_terms: 'Terms',
     footer_accessibility: 'Accessibility',
+
+    // About story body
+    about_story_body: 'Founded by Bessem Gam in Monastir, Tunisia, we have grown into a recognised manufacturer of home textiles, trusted by clients across the globe.',
+    company_about: 'Couture Supplies is a specialist in the manufacture of home textiles, health products, and fabric and non-woven packaging. Since our founding in 2005 by Hafedh Gam in Sahline, Monastir, we have built a worldwide reputation for exceptional textiles.',
+    company_about_extended: 'Our expertise as a subcontractor for home linen, hospitality, bath and hospital textiles sets us apart in productivity, reactivity and quality. We are committed to products that meet the strictest standards and the specific needs of both national and international clients.',
+    company_clients_note: 'Through our commitment to excellence we have earned the trust of renowned brands including Jacquard Français, Jalla, Yves Delorme, Ralph Lauren and Air France.',
+
+    // Stats
+    stat_experience: 'Years of Experience',
+    stat_employees: 'Skilled Employees',
+    stat_clients: 'Global Clients',
+
+    // Services
+    service_study_title: 'Study Service',
+    service_study_desc: 'Based on your directives, our analysis office verifies the feasibility of every project and provides the guidance needed to bring it to life.',
+    service_design_title: 'Design & Model Creation',
+    service_design_desc: 'We collaborate with you to design original, innovative models that meet your specific needs and captivate your target market.',
+    service_cutting_title: 'Textile Cutting',
+    service_cutting_desc: 'Our cutting workshop handles wide-width materials, specialising in bed, table and bath linen to feed our production lines.',
+    service_manufacturing_title: 'Manufacturing',
+    service_manufacturing_desc: 'Our atelier is equipped with some of the most advanced, recent machinery from renowned brands, ensuring every piece matches your specifications.',
+    service_quality_title: 'Quality Verification',
+    service_quality_desc: 'Every product is inspected by skilled experts to guarantee compliance with both client standards and our own craftsmanship.',
+    service_embroidery_title: 'Embroidery & Personalization',
+    service_embroidery_desc: 'Add a unique touch with our embroidery and personalization service, turning your products into memorable, one-of-a-kind pieces.',
+    service_storage_title: 'Storage',
+    service_storage_desc: 'We offer additional raw-material storage and management for select clients, cutting lead times by a week and optimising transport costs.',
+
+    // Product range
+    range_duvets: 'Duvets',
+    range_bedspreads: 'Bedspreads',
+    range_bed_sets: 'Bed Sets',
+    range_fitted_sheets: 'Fitted Sheets',
+    range_flat_sheets: 'Flat Sheets',
+    range_pillows: 'Pillows',
+    range_pillowcases: 'Pillowcases',
+    range_embroideries: 'Embroideries',
+    range_screen_printing: 'Screen Printing',
+    range_custom_dyeing: 'Custom Dyeing',
   },
 
   ar: {
@@ -412,6 +500,45 @@ const translations = {
     footer_privacy: 'الخصوصية',
     footer_terms: 'الشروط',
     footer_accessibility: 'إمكانية الوصول',
+
+    // About story body
+    about_story_body: 'تأسست على يد بسام قام في المنستير، تونس، ونمت لتصبح مصنعاً معترفاً به للمنسوجات المنزلية، موثوقاً به من قبل عملاء حول العالم.',
+    company_about: 'كوتور سبلايز متخصصة في تصنيع المنسوجات المنزلية ومنتجات الصحة والتغليف النسيجي وغير المنسوج. منذ تأسيسنا عام 2005 على يد حافظ قام في ساهلين، المنستير، بنينا سمعة عالمية في المنسوجات الاستثنائية.',
+    company_about_extended: 'تميزنا كمقاول من الباطن لمنسوجات المنزل والضيافة والحمام والمستشفيات في الإنتاجية والاستجابة والجودة. نلتزم بتقديم منتجات تلبي أصرم المعايير والاحتياجات الخاصة لعملائنا المحليين والدوليين.',
+    company_clients_note: 'من خلال التزامنا بالتميز، اكتسبنا ثقة علامات تجارية مرموقة منها Jacquard Français وJalla وYves Delorme وRalph Lauren وAir France.',
+
+    // Stats
+    stat_experience: 'سنوات من الخبرة',
+    stat_employees: 'موظف متخصص',
+    stat_clients: 'عملاء عالميون',
+
+    // Services
+    service_study_title: 'خدمة الدراسة',
+    service_study_desc: 'بناءً على توجيهاتك، يتحقق مكتب التحليل لدينا من جدوى كل مشروع ويقدم الإرشادات اللازمة لإحيائه.',
+    service_design_title: 'التصميم وإنشاء النماذج',
+    service_design_desc: 'نتعاون معك لتصميم نماذج أصلية ومبتكرة تلبي احتياجاتك الخاصة وتأسر سوقك المستهدف.',
+    service_cutting_title: 'قطع النسيج',
+    service_cutting_desc: 'يتعامل ورشة القطع لدينا مع المواد عريضة العرض، متخصصاً في مفارش السرير والمائدة والحمام لتغذية خطوط الإنتاج.',
+    service_manufacturing_title: 'التصنيع',
+    service_manufacturing_desc: 'أتيليهنا مجهز بأحدث الآلات وأكثرها تطوراً من علامات تجارية مرموقة، مما يضمن مطابقة كل قطعة لمواصفاتك.',
+    service_quality_title: 'التحقق من الجودة',
+    service_quality_desc: 'يتم فحص كل منتج من قبل خبراء متخصصين لضمان الامتثال لمعايير العميل وحرفيتنا الخاصة.',
+    service_embroidery_title: 'التطريز والتخصيص',
+    service_embroidery_desc: 'أضف لمسة فريدة مع خدمة التطريز والتخصيص لدينا، محولاً منتجاتك إلى قطع لا تُنسى وفريدة من نوعها.',
+    service_storage_title: 'التخزين',
+    service_storage_desc: 'نقدم تخزيناً وإدارة إضافية للمواد الخام لعملاء مختارين، مما يقلل أوقات التسليم بأسبوع ويُحسّن تكاليف النقل.',
+
+    // Product range
+    range_duvets: 'لحف',
+    range_bedspreads: 'مفارش سرير',
+    range_bed_sets: 'طقم سرير',
+    range_fitted_sheets: 'شراشف مطاطة',
+    range_flat_sheets: 'شراشف مسطحة',
+    range_pillows: 'وسائد',
+    range_pillowcases: 'أكياس وسائد',
+    range_embroideries: 'تطريزات',
+    range_screen_printing: 'طباعة شاشة',
+    range_custom_dyeing: 'صباغة مخصصة',
   },
 }
 

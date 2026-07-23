@@ -140,7 +140,7 @@ function Contact() {
               <div className="space-y-6">
                 <ContactInfoCard
                   label={t('contact_address')}
-                  value={contact.address}
+                  value={t('contact_address_value')}
                   icon={
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />

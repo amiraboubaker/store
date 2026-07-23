@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
+import { useLanguage } from '../context/LanguageContext'
 
 function ProductCard({ product, loading = false }) {
+  const { t } = useLanguage()
   if (loading) {
     return (
       <div className="card overflow-hidden animate-pulse">
@@ -18,25 +20,25 @@ function ProductCard({ product, loading = false }) {
       <div className="relative aspect-[4/3] overflow-hidden bg-couture-linen">
         <img
           src={product.image}
-          alt={product.name}
+          alt={t(product.nameKey)}
           loading="lazy"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         {product.featured && (
           <span className="absolute top-3 left-3 bg-couture-espresso text-white text-xs font-medium px-3 py-1 tracking-wider uppercase">
-            Featured
+            {t('product_featured')}
           </span>
         )}
         <div className="absolute inset-0 bg-couture-espresso/0 group-hover:bg-couture-espresso/10 transition-colors duration-300 flex items-center justify-center">
           <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-couture-espresso text-xs font-medium px-4 py-2 tracking-wider uppercase">
-            Quick Preview
+            {t('product_quick_preview')}
           </span>
         </div>
       </div>
       <div className="p-5">
-        <p className="text-xs text-couture-bark uppercase tracking-wider mb-2">{product.category}</p>
+        <p className="text-xs text-couture-bark uppercase tracking-wider mb-2">{t(product.categoryKey)}</p>
         <h3 className="font-display text-lg font-medium text-couture-espresso group-hover:text-couture-goldDark transition-colors">
-          {product.name}
+          {t(product.nameKey)}
         </h3>
       </div>
     </Link>

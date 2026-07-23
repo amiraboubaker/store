@@ -60,11 +60,11 @@ function Header() {
       />
       <div className="container">
         <div className="flex items-center justify-between h-16 md:h-20">
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center gap-x-2">
             <img src="/assets/images/icogam/logo.png" alt="Rayes Modes" className="h-10 md:h-12 w-auto" />
           </Link>
 
-          <nav className="hidden lg:flex items-center space-x-8">
+          <nav className="hidden lg:flex items-center gap-x-8">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -85,12 +85,12 @@ function Header() {
             ))}
           </nav>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center gap-x-3">
             {/* Language Dropdown */}
             <div className="relative" ref={langRef}>
               <button
                 onClick={() => setLangOpen(!langOpen)}
-                className="flex items-center space-x-1.5 px-2.5 py-1.5 text-sm text-couture-bark hover:text-couture-espresso border border-transparent hover:border-couture-linen transition-all"
+                className="flex items-center gap-x-1.5 px-2.5 py-1.5 text-sm text-couture-bark hover:text-couture-espresso border border-transparent hover:border-couture-linen transition-all"
                 aria-label="Select language"
               >
                 <span className="font-medium">{currentLang.label}</span>

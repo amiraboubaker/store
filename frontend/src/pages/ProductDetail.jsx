@@ -46,17 +46,17 @@ function ProductDetail() {
           <span>/</span>
           <Link to="/products" className="hover:text-couture-espresso">{t('detail_products')}</Link>
           <span>/</span>
-          <span className="text-couture-espresso">{product.name}</span>
+          <span className="text-couture-espresso">{t(product.nameKey)}</span>
         </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           <div className="aspect-[4/3] bg-couture-linen overflow-hidden">
-            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+            <img src={product.image} alt={t(product.nameKey)} className="w-full h-full object-cover" />
           </div>
 
           <div className="flex flex-col">
-            <p className="text-sm text-couture-bark uppercase tracking-widest mb-3">{product.category}</p>
-            <h1 className="text-3xl md:text-4xl font-display font-medium text-couture-espresso mb-4">{product.name}</h1>
+            <p className="text-sm text-couture-bark uppercase tracking-widest mb-3">{t(product.categoryKey)}</p>
+            <h1 className="text-3xl md:text-4xl font-display font-medium text-couture-espresso mb-4">{t(product.nameKey)}</h1>
 
             <div className="flex items-center space-x-4 mb-6">
               <div className="flex items-center space-x-1">
@@ -74,32 +74,32 @@ function ProductDetail() {
               <span className="text-sm text-couture-bark">{product.rating} {t('detail_rating')}</span>
             </div>
 
-            <p className="text-couture-bark leading-relaxed mb-8">{product.description}</p>
+            <p className="text-couture-bark leading-relaxed mb-8">{t(product.descKey)}</p>
 
             <div className="space-y-3 mb-8 text-sm">
               <div className="flex">
                 <span className="w-32 text-couture-bark">{t('detail_material')}</span>
-                <span className="text-couture-espresso">{product.material}</span>
+                <span className="text-couture-espresso">{t(product.materialKey)}</span>
               </div>
               <div className="flex">
                 <span className="w-32 text-couture-bark">{t('detail_weight')}</span>
-                <span className="text-couture-espresso">{product.weight}</span>
+                <span className="text-couture-espresso">{t(product.weightKey)}</span>
               </div>
               <div className="flex">
                 <span className="w-32 text-couture-bark">{t('detail_width')}</span>
-                <span className="text-couture-espresso">{product.width}</span>
+                <span className="text-couture-espresso">{t(product.widthKey)}</span>
               </div>
             </div>
 
             <div className="mb-8">
               <p className="label mb-3">{t('detail_colors')}</p>
               <div className="flex flex-wrap gap-3">
-                {product.colors.map((color) => (
+                {product.colorKeys.map((colorKey) => (
                   <span
-                    key={color}
+                    key={colorKey}
                     className="px-4 py-2 border border-couture-linen text-sm text-couture-espresso"
                   >
-                    {color}
+                    {t(colorKey)}
                   </span>
                 ))}
               </div>

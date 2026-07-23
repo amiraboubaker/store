@@ -24,9 +24,9 @@ export const company = {
 }
 
 export const stats = [
-  { value: 20, suffix: '+', label: 'Years of Experience' },
-  { value: 60, suffix: '+', label: 'Skilled Employees' },
-  { value: 5, suffix: '+', label: 'Global Clients' },
+  { value: 20, suffix: '+', labelKey: 'stat_experience' },
+  { value: 60, suffix: '+', labelKey: 'stat_employees' },
+  { value: 5, suffix: '+', labelKey: 'stat_clients' },
 ]
 
 export const services = [
@@ -34,71 +34,64 @@ export const services = [
     id: 'study',
     icon: 'study',
     image: '/assets/images/icogam/book_10214983.png',
-    title: 'Study Service',
-    description:
-      'Based on your directives, our analysis office verifies the feasibility of every project and provides the guidance needed to bring it to life.',
+    titleKey: 'service_study_title',
+    descKey: 'service_study_desc',
   },
   {
     id: 'design',
     icon: 'design',
     image: '/assets/images/icogam/sketch_4515763.png',
-    title: 'Design & Model Creation',
-    description:
-      'We collaborate with you to design original, innovative models that meet your specific needs and captivate your target market.',
+    titleKey: 'service_design_title',
+    descKey: 'service_design_desc',
   },
   {
     id: 'cutting',
     icon: 'cutting',
     image: '/assets/images/icogam/wrapping-paper_4454764.png',
-    title: 'Textile Cutting',
-    description:
-      'Our cutting workshop handles wide-width materials, specialising in bed, table and bath linen to feed our production lines.',
+    titleKey: 'service_cutting_title',
+    descKey: 'service_cutting_desc',
   },
   {
     id: 'manufacturing',
     icon: 'manufacturing',
     image: '/assets/images/icogam/sewing-machine_10466785.png',
-    title: 'Manufacturing',
-    description:
-      'Our atelier is equipped with some of the most advanced, recent machinery from renowned brands, ensuring every piece matches your specifications.',
+    titleKey: 'service_manufacturing_title',
+    descKey: 'service_manufacturing_desc',
   },
   {
     id: 'quality',
     icon: 'quality',
     image: '/assets/images/icogam/quality-control_11268858.png',
-    title: 'Quality Verification',
-    description:
-      'Every product is inspected by skilled experts to guarantee compliance with both client standards and our own craftsmanship.',
+    titleKey: 'service_quality_title',
+    descKey: 'service_quality_desc',
   },
   {
     id: 'embroidery',
     icon: 'embroidery',
     image: '/assets/images/icogam/embroidery_4838950.png',
-    title: 'Embroidery & Personalization',
-    description:
-      'Add a unique touch with our embroidery and personalization service, turning your products into memorable, one-of-a-kind pieces.',
+    titleKey: 'service_embroidery_title',
+    descKey: 'service_embroidery_desc',
   },
   {
     id: 'storage',
     icon: 'storage',
     image: '/assets/images/icogam/inventory_7078214.png',
-    title: 'Storage',
-    description:
-      'We offer additional raw-material storage and management for select clients, cutting lead times by a week and optimising transport costs.',
+    titleKey: 'service_storage_title',
+    descKey: 'service_storage_desc',
   },
 ]
 
-export const productRange = [
-  'Duvets',
-  'Bedspreads',
-  'Bed Sets',
-  'Fitted Sheets',
-  'Flat Sheets',
-  'Pillows',
-  'Pillowcases',
-  'Embroideries',
-  'Screen Printing',
-  'Custom Dyeing',
+export const productRangeKeys = [
+  'range_duvets',
+  'range_bedspreads',
+  'range_bed_sets',
+  'range_fitted_sheets',
+  'range_flat_sheets',
+  'range_pillows',
+  'range_pillowcases',
+  'range_embroideries',
+  'range_screen_printing',
+  'range_custom_dyeing',
 ]
 
 export const clients = [

@@ -3,7 +3,7 @@ import Reveal from '../components/Reveal'
 import SectionHeading from '../components/SectionHeading'
 import Counter from '../components/Counter'
 import PageBanner from '../components/PageBanner'
-import { services, productRange, stats, company } from '../data/company'
+import { services, productRangeKeys, stats, company } from '../data/company'
 import { useLanguage } from '../context/LanguageContext'
 
 function Services() {
@@ -29,10 +29,10 @@ function Services() {
               <Reveal key={service.id} delay={(i % 3) * 100}>
                 <div className="card h-full p-7 hover-lift group">
                   <div className="w-16 h-16 mb-5 flex items-center justify-center rounded-full bg-white p-3 group-hover:bg-couture-espresso transition-colors duration-300">
-                    <img src={service.image} alt={service.title} loading="lazy" className="w-full h-full object-contain" />
+                    <img src={service.image} alt={t(service.titleKey)} loading="lazy" className="w-full h-full object-contain" />
                   </div>
-                  <h3 className="font-display text-xl font-medium text-couture-espresso mb-3">{service.title}</h3>
-                  <p className="text-sm text-couture-bark leading-relaxed">{service.description}</p>
+                  <h3 className="font-display text-xl font-medium text-couture-espresso mb-3">{t(service.titleKey)}</h3>
+                  <p className="text-sm text-couture-bark leading-relaxed">{t(service.descKey)}</p>
                 </div>
               </Reveal>
             ))}
@@ -49,12 +49,12 @@ function Services() {
           />
           <Reveal>
             <div className="flex flex-wrap justify-center gap-3 md:gap-4 max-w-4xl mx-auto">
-              {productRange.map((item) => (
+              {productRangeKeys.map((key) => (
                 <span
-                  key={item}
+                  key={key}
                   className="px-5 py-3 bg-white border border-couture-linen text-couture-espresso text-sm tracking-wide hover:border-couture-gold transition-colors"
                 >
-                  {item}
+                  {t(key)}
                 </span>
               ))}
             </div>
@@ -66,7 +66,7 @@ function Services() {
         <div className="container py-12 md:py-16">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
             {stats.map((stat) => (
-              <Counter key={stat.label} end={stat.value} suffix={stat.suffix} label={stat.label} light />
+              <Counter key={stat.labelKey} end={stat.value} suffix={stat.suffix} label={t(stat.labelKey)} light />
             ))}
           </div>
         </div>
@@ -79,7 +79,7 @@ function Services() {
               <h2 className="text-2xl md:text-3xl font-display font-medium text-couture-espresso mb-4">
                 {t('services_cta_title')}
               </h2>
-              <p className="text-couture-bark max-w-xl mx-auto mb-8">{company.clientsNote}</p>
+              <p className="text-couture-bark max-w-xl mx-auto mb-8">{t('company_clients_note')}</p>
               <Link to="/contact" className="btn btn-primary">{t('services_cta_btn')}</Link>
             </div>
           </Reveal>

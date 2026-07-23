@@ -115,10 +115,10 @@ function Home() {
               <Reveal key={service.id} delay={i * 100}>
                 <div className="card h-full p-7 hover-lift group">
                   <div className="w-16 h-16 mb-5 flex items-center justify-center rounded-full bg-white p-3 group-hover:bg-couture-espresso transition-colors duration-300">
-                    <img src={service.image} alt={service.title} loading="lazy" className="w-full h-full object-contain" />
+                    <img src={service.image} alt={t(service.titleKey)} loading="lazy" className="w-full h-full object-contain" />
                   </div>
-                  <h3 className="font-display text-xl font-medium text-couture-espresso mb-3">{service.title}</h3>
-                  <p className="text-sm text-couture-bark leading-relaxed">{service.description}</p>
+                  <h3 className="font-display text-xl font-medium text-couture-espresso mb-3">{t(service.titleKey)}</h3>
+                  <p className="text-sm text-couture-bark leading-relaxed">{t(service.descKey)}</p>
                 </div>
               </Reveal>
             ))}
@@ -135,7 +135,7 @@ function Home() {
         <div className="container py-12 md:py-16">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
             {stats.map((stat) => (
-              <Counter key={stat.label} end={stat.value} suffix={stat.suffix} label={stat.label} light />
+              <Counter key={stat.labelKey} end={stat.value} suffix={stat.suffix} label={t(stat.labelKey)} light />
             ))}
           </div>
         </div>
