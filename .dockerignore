@@ -12,9 +12,11 @@ tmp
 temp
 dist
 build
+*.sqlite
 database.sqlite
 frontend/dist
 frontend/node_modules
+backend/node_modules
 README.md
 DEPLOYMENT.md
 SECURITY.md
@@ -22,7 +24,4 @@ ARCHITECTURE.md
 PROJECT_SUMMARY.md
 API_ROUTES.md
 QUICK_START.md
-docker-compose*.yml
-Dockerfile*
-nginx/Dockerfile
 .github
