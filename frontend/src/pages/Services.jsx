@@ -20,6 +20,7 @@ function Services() {
       <section className="section bg-white">
         <div className="container">
           <SectionHeading
+            id="our-services"
             eyebrow={t('services_section_eyebrow')}
             title={t('services_section_title')}
             subtitle={t('services_section_subtitle')}
@@ -43,6 +44,7 @@ function Services() {
       <section className="section bg-white border-t border-couture-linen">
         <div className="container">
           <SectionHeading
+            id="product-range"
             eyebrow={t('services_range_eyebrow')}
             title={t('services_range_title')}
             align="center"
@@ -76,9 +78,15 @@ function Services() {
         <div className="container">
           <Reveal>
             <div className="card p-10 md:p-14 text-center bg-white">
-              <h2 className="text-2xl md:text-3xl font-display font-medium text-couture-espresso mb-4">
-                {t('services_cta_title')}
-              </h2>
+               <h2 id="services-cta" className="text-2xl md:text-3xl font-display font-medium text-couture-espresso mb-4 group inline">
+                  {t('services_cta_title')}
+                  <a href="#services-cta" onClick={(e) => { e.preventDefault(); window.location.hash = 'services-cta' }} className="inline-flex items-center ml-1.5 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity align-middle text-couture-bark hover:text-couture-espresso" aria-label={`Link to ${t('services_cta_title')}`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    </svg>
+                  </a>
+                </h2>
               <p className="text-couture-bark max-w-xl mx-auto mb-8">{t('company_clients_note')}</p>
               <Link to="/contact" className="btn btn-primary">{t('services_cta_btn')}</Link>
             </div>

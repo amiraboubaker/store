@@ -22,6 +22,10 @@ function App() {
     return () => document.removeEventListener('click', play, play)
   }, [])
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [location.pathname])
+
   const toggle = () => {
     audioRef.current.muted = !muted
     setMuted(m => !m)

@@ -73,9 +73,15 @@ function Home() {
       <section className="section bg-white">
         <div className="container">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-display font-medium text-couture-espresso mb-4">
-              {t('home_curated_title')}
-            </h2>
+          <h2 id="curated-collection" className="text-3xl md:text-4xl font-display font-medium text-couture-espresso mb-4 group inline">
+            {t('home_curated_title')}
+            <a href="#curated-collection" onClick={(e) => { e.preventDefault(); window.location.hash = 'curated-collection' }} className="inline-flex items-center ml-1.5 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity align-middle text-couture-bark hover:text-couture-espresso" aria-label={`Link to ${t('home_curated_title')}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+              </svg>
+            </a>
+          </h2>
             <p className="text-couture-bark max-w-2xl mx-auto">
               {t('home_curated_subtitle')}
             </p>
@@ -106,6 +112,7 @@ function Home() {
       <section className="section bg-white border-t border-couture-linen">
         <div className="container">
           <SectionHeading
+            id="home-services"
             eyebrow={t('home_services_eyebrow')}
             title={t('home_services_title')}
             subtitle={t('home_services_subtitle')}
@@ -179,8 +186,14 @@ function Home() {
         <div className="container">
           <Reveal>
             <div className="bg-couture-espresso text-white p-10 md:p-16 text-center">
-              <h2 className="text-2xl md:text-4xl font-display font-medium mb-4 text-balance">
+              <h2 id="home-cta" className="text-2xl md:text-4xl font-display font-medium mb-4 text-balance group inline">
                 {t('home_cta_title')}
+                <a href="#home-cta" onClick={(e) => { e.preventDefault(); window.location.hash = 'home-cta' }} className="inline-flex items-center ml-1.5 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity align-middle text-white/60 hover:text-white" aria-label={`Link to ${t('home_cta_title')}`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                  </svg>
+                </a>
               </h2>
               <p className="text-white/70 max-w-xl mx-auto mb-8">{t('home_cta_subtitle')}</p>
               <Link to="/contact" className="btn bg-white text-couture-espresso hover:bg-couture-gold hover:text-white">

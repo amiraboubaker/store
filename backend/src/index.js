@@ -185,6 +185,23 @@ const setupRoutes = (User, Product, Cart, Order, OrderItem, Payment, AdminAction
     const adminUiDir = path.join(__dirname, '..', 'public', 'admin');
     app.use('/admin-ui', express.static(adminUiDir));
 
+    // Frontend SPA (built with Vite, served from the same origin)
+    const frontendDir = path.join(__dirname, '..', 'public', 'frontend');
+    app.use(express.static(frontendDir));
+
+    // SPA fallback: any non-API GET request that wasn't matched by a route
+    // or static file should return the frontend index.html
+    app.get('*', (req, res) => {
+      const apiPrefixes = [
+        '/api', '/auth', '/admin', '/customer', '/products',
+        '/cart', '/checkout', '/contact', '/admin-ui', '/health'
+      ];
+      const isApi = apiPrefixes.some(prefix => req.path.startsWith(prefix));
+      if (!isApi) {
+        res.sendFile(path.join(frontendDir, 'index.html'));
+      }
+    });
+
     // Admin API (every route is restricted to the admin role by the router)
     app.use('/admin', adminRoutes({ User, Product, Order, OrderItem, AdminActionLog }));
 

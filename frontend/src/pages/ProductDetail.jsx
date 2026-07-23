@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import PageBanner from '../components/PageBanner'
 import Loading from '../components/Loading'
 import ErrorState from '../components/ErrorState'
 import { products } from '../data/products'
@@ -39,8 +40,13 @@ function ProductDetail() {
   }
 
   return (
-    <div className="section bg-white">
-      <div className="container">
+    <div>
+      <PageBanner
+        eyebrow={t('product_eyebrow')}
+        title={<span id={`product-${id}-title`}>{t(product.nameKey)}</span>}
+      />
+      <div className="section bg-white">
+        <div className="container">
         <nav className="flex items-center space-x-2 text-sm text-couture-bark mb-8">
           <Link to="/" className="hover:text-couture-espresso">{t('detail_home')}</Link>
           <span>/</span>
@@ -111,6 +117,7 @@ function ProductDetail() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   )
 }

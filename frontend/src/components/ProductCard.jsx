@@ -16,7 +16,7 @@ function ProductCard({ product, loading = false }) {
   }
 
   return (
-    <Link to={`/products/${product.id}`} className="group card overflow-hidden block">
+    <Link to={`/products/${product.id}#product-${product.id}-title`} className="group card overflow-hidden block">
       <div className="relative aspect-[4/3] overflow-hidden bg-couture-linen">
         <img
           src={product.image}
