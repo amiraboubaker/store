@@ -17,7 +17,7 @@ RUN addgroup -g 1001 -S nodejs && \
 WORKDIR /app
 
 COPY backend/package*.json ./
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 COPY backend/src ./src
 COPY backend/public ./public

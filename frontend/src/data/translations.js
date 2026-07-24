@@ -93,6 +93,7 @@ const translations = {
     contact_sent_note: 'Nous vous répondrons sous peu.',
     contact_send_another: 'Envoyer un Autre',
     contact_address: 'Adresse',
+    contact_address_value: 'Rayes Modes Av Habib Bourguiba Bennane',
     contact_phone: 'Téléphone',
 
     // Auth
@@ -280,6 +281,7 @@ const translations = {
     contact_sent_note: "We'll get back to you shortly.",
     contact_send_another: 'Send Another',
     contact_address: 'Address',
+    contact_address_value: 'Rayes Modes Av Habib Bourguiba Bennane',
     contact_phone: 'Phone',
 
     auth_login: 'Login',
@@ -454,6 +456,7 @@ const translations = {
     contact_sent_note: 'سنرد عليك قريباً.',
     contact_send_another: 'إرسال رسالة أخرى',
     contact_address: 'العنوان',
+    contact_address_value: 'الريس مودس شارع الحبيب بورقيبة بنان',
     contact_phone: 'الهاتف',
 
     auth_login: 'تسجيل الدخول',
