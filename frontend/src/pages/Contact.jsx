@@ -5,6 +5,9 @@ import PageBanner from '../components/PageBanner'
 import { contact } from '../data/company'
 import { useLanguage } from '../context/LanguageContext'
 
+const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+console.log('[Contact] API URL:', API)
+
 function validate(form, t) {
   const errors = {}
   if (!form.name.trim()) errors.name = t('contact_err_name')
@@ -51,26 +54,44 @@ function Contact() {
     setLoading(true)
     setServerError('')
     try {
+      const res = await fetch(`${API}/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        console.error('Contact save failed:', res.status, data)
+        setServerError(data.errors?.[0]?.msg || data.message || t('contact_err_server'))
+        return
+      }
+
       const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
       const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID
       const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
-      if (!EMAILJS_PUBLIC_KEY || !EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID) {
-        throw new Error('EmailJS env vars are missing')
+      if (!EMAILJS_PUBLIC_KEY || !EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !window.emailjs) {
+        setSent(true)
+        return
       }
-      await window.emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        {
-          name: form.name,
-          email: form.email,
-          subject: form.subject || 'No subject',
-          message: form.message,
-          to_email: 'amiraboubakeresprims@gmail.com',
-        },
-        EMAILJS_PUBLIC_KEY
-      )
+      try {
+        await window.emailjs.send(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_TEMPLATE_ID,
+          {
+            name: form.name,
+            email: form.email,
+            subject: form.subject || 'No subject',
+            message: form.message,
+            to_email: 'amiraboubakeresprims@gmail.com',
+          },
+          EMAILJS_PUBLIC_KEY
+        )
+      } catch (emailError) {
+        console.error('EmailJS error:', emailError)
+      }
       setSent(true)
-    } catch {
+    } catch (error) {
+      console.error('Contact submit error:', error)
       setServerError(t('contact_err_server'))
     } finally {
       setLoading(false)
