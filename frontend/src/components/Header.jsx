@@ -61,7 +61,7 @@ function Header() {
       <div className="container">
         <div className="flex items-center justify-between h-16 md:h-20">
           <Link to="/" className="flex items-center gap-x-2">
-            <img src="/assets/images/rayesmodes/logo.png" alt="Rayes Modes" className="h-10 md:h-12 w-auto" />
+            <img src="/assets/images/rayesmodes/logo.jpg" alt="Rayes Modes" className="h-10 md:h-12 w-auto" />
           </Link>
 
           <nav className="hidden lg:flex items-center gap-x-8">
@@ -69,17 +69,15 @@ function Header() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`group relative text-sm tracking-wide transition-colors py-1 ${
-                  isActive(item.path)
-                    ? 'text-couture-espresso font-medium'
-                    : 'text-couture-bark hover:text-couture-espresso'
-                }`}
+                className={`group relative text-sm tracking-wide transition-colors py-1 ${isActive(item.path)
+                  ? 'text-couture-espresso font-medium'
+                  : 'text-couture-bark hover:text-couture-espresso'
+                  }`}
               >
                 {item.name}
                 <span
-                  className={`absolute left-0 -bottom-0.5 h-px bg-couture-gold transition-all duration-300 ${
-                    isActive(item.path) ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}
+                  className={`absolute left-0 -bottom-0.5 h-px bg-couture-gold transition-all duration-300 ${isActive(item.path) ? 'w-full' : 'w-0 group-hover:w-full'
+                    }`}
                 />
               </Link>
             ))}
@@ -110,11 +108,10 @@ function Header() {
                     <button
                       key={l.code}
                       onClick={() => { setLang(l.code); setLangOpen(false) }}
-                      className={`w-full flex items-center justify-center px-3 py-2 text-sm transition-colors ${
-                        lang === l.code
-                          ? 'bg-couture-linen text-couture-espresso font-medium'
-                          : 'text-couture-bark hover:bg-couture-linen/50 hover:text-couture-espresso'
-                      }`}
+                      className={`w-full flex items-center justify-center px-3 py-2 text-sm transition-colors ${lang === l.code
+                        ? 'bg-couture-linen text-couture-espresso font-medium'
+                        : 'text-couture-bark hover:bg-couture-linen/50 hover:text-couture-espresso'
+                        }`}
                     >
                       <span className="font-medium">{l.label}</span>
                     </button>
@@ -146,9 +143,8 @@ function Header() {
                 key={item.path}
                 to={item.path}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block py-3 text-sm tracking-wide transition-colors ${
-                  isActive(item.path) ? 'text-couture-espresso font-medium' : 'text-couture-bark'
-                }`}
+                className={`block py-3 text-sm tracking-wide transition-colors ${isActive(item.path) ? 'text-couture-espresso font-medium' : 'text-couture-bark'
+                  }`}
               >
                 {item.name}
               </Link>
