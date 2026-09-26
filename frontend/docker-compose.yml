@@ -6,6 +6,9 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
+        VITE_EMAILJS_PUBLIC_KEY: ${VITE_EMAILJS_PUBLIC_KEY:-}
+        VITE_EMAILJS_SERVICE_ID: ${VITE_EMAILJS_SERVICE_ID:-}
+        VITE_EMAILJS_TEMPLATE_ID: ${VITE_EMAILJS_TEMPLATE_ID:-}
     ports:
       - "${FRONTEND_PORT:-3000}:80"
     restart: unless-stopped
