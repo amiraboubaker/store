@@ -1,6 +1,6 @@
 services:
   backend:
-    image: ${DOCKERHUB_USERNAME:?Set DOCKERHUB_USERNAME}/${BACKEND_IMAGE_NAME:-couture-backend}:${IMAGE_TAG:-latest}
+    image: amira100/rayesmodes-back-app
     build:
       context: .
       dockerfile: Dockerfile
