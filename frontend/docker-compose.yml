@@ -1,0 +1,11 @@
+services:
+  frontend:
+    image: ${DOCKERHUB_USERNAME:?Set DOCKERHUB_USERNAME}/${FRONTEND_IMAGE_NAME:-couture-frontend}:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    restart: unless-stopped

@@ -124,14 +124,34 @@ npm run test     # Run Jest tests
 
 ## Docker
 
+The backend and frontend each have an independent `docker-compose.yml`. Log in
+to Docker Hub, then build and push both images from their respective folders:
+
 ```bash
-docker compose up --build
+docker login
+
+cd backend
+docker compose build
+docker compose push
+
+cd ../frontend
+docker compose build
+docker compose push
 ```
 
-Services:
-- Frontend: `:3000`
-- Backend: `:3001`
-- MySQL: `:3306`
+Set the Docker Hub namespace and optional image settings before building:
+
+```bash
+# PowerShell
+$env:DOCKERHUB_USERNAME = "your-dockerhub-username"
+$env:IMAGE_TAG = "latest"
+$env:VITE_API_URL = "http://localhost:5000"
+```
+
+The default image names are `couture-backend` and `couture-frontend`. Override
+them with `BACKEND_IMAGE_NAME` and `FRONTEND_IMAGE_NAME`. The backend uses
+`.env` for its runtime configuration, while `VITE_API_URL` is a frontend build
+argument.
 
 ## Scaling Guidelines
 
