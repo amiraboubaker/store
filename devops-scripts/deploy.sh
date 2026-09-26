@@ -15,9 +15,20 @@ if [ ! -f "$COMPOSE_FILE" ]; then
 fi
 
 if [ ! -f ".env" ]; then
-    echo "ERROR: .env file not found in $(pwd)"
-    echo "Copy .env.example to .env and edit your values"
-    exit 1
+    if [ -f ".env.example" ]; then
+        echo "WARNING: .env not found. Creating from .env.example..."
+        cp .env.example .env
+        echo "Please review and edit .env with your actual values."
+        echo "The default values in .env.example are for local development."
+        echo ""
+        echo "Edit with: nano .env  (or your preferred editor)"
+        echo ""
+        read -p "Press ENTER to continue, or Ctrl+C to abort and edit .env first..."
+    else
+        echo "ERROR: .env and .env.example files not found in $(pwd)"
+        echo "Make sure you are in the devops-scripts directory"
+        exit 1
+    fi
 fi
 
 ACTION="${1:-deploy}"
