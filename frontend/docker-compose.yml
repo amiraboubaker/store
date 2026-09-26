@@ -10,8 +10,7 @@ services:
         VITE_EMAILJS_SERVICE_ID: ${VITE_EMAILJS_SERVICE_ID:-}
         VITE_EMAILJS_TEMPLATE_ID: ${VITE_EMAILJS_TEMPLATE_ID:-}
     env_file:
-      - path: .env
-        required: false
+      - .env
     ports:
       - "${FRONTEND_PORT:-3000}:80"
     restart: unless-stopped
