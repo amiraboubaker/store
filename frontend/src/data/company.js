@@ -3,10 +3,10 @@
 
 // Local copies of the ICOGAM brand imagery, served from /public.
 export const media = {
-  logo: '/assets/images/icogam/logo.png',
-  heroImage: '/assets/images/icogam/image1.jpg',
-  aboutImage: '/assets/images/icogam/1.png',
-  captureImage: '/assets/images/icogam/2.png',
+  logo: '/assets/images/rayesmodes/logo.png',
+  heroImage: '/assets/images/rayesmodes/image1.jpg',
+  aboutImage: '/assets/images/rayesmodes/1.png',
+  captureImage: '/assets/images/rayesmodes/2.png',
 }
 
 export const company = {
@@ -33,49 +33,49 @@ export const services = [
   {
     id: 'study',
     icon: 'study',
-    image: '/assets/images/icogam/book_10214983.png',
+    image: '/assets/images/rayesmodes/book_10214983.png',
     titleKey: 'service_study_title',
     descKey: 'service_study_desc',
   },
   {
     id: 'design',
     icon: 'design',
-    image: '/assets/images/icogam/sketch_4515763.png',
+    image: '/assets/images/rayesmodes/sketch_4515763.png',
     titleKey: 'service_design_title',
     descKey: 'service_design_desc',
   },
   {
     id: 'cutting',
     icon: 'cutting',
-    image: '/assets/images/icogam/wrapping-paper_4454764.png',
+    image: '/assets/images/rayesmodes/wrapping-paper_4454764.png',
     titleKey: 'service_cutting_title',
     descKey: 'service_cutting_desc',
   },
   {
     id: 'manufacturing',
     icon: 'manufacturing',
-    image: '/assets/images/icogam/sewing-machine_10466785.png',
+    image: '/assets/images/rayesmodes/sewing-machine_10466785.png',
     titleKey: 'service_manufacturing_title',
     descKey: 'service_manufacturing_desc',
   },
   {
     id: 'quality',
     icon: 'quality',
-    image: '/assets/images/icogam/quality-control_11268858.png',
+    image: '/assets/images/rayesmodes/quality-control_11268858.png',
     titleKey: 'service_quality_title',
     descKey: 'service_quality_desc',
   },
   {
     id: 'embroidery',
     icon: 'embroidery',
-    image: '/assets/images/icogam/embroidery_4838950.png',
+    image: '/assets/images/rayesmodes/embroidery_4838950.png',
     titleKey: 'service_embroidery_title',
     descKey: 'service_embroidery_desc',
   },
   {
     id: 'storage',
     icon: 'storage',
-    image: '/assets/images/icogam/inventory_7078214.png',
+    image: '/assets/images/rayesmodes/inventory_7078214.png',
     titleKey: 'service_storage_title',
     descKey: 'service_storage_desc',
   },

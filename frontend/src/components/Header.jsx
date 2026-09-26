@@ -61,7 +61,7 @@ function Header() {
       <div className="container">
         <div className="flex items-center justify-between h-16 md:h-20">
           <Link to="/" className="flex items-center gap-x-2">
-            <img src="/assets/images/icogam/logo.png" alt="Rayes Modes" className="h-10 md:h-12 w-auto" />
+            <img src="/assets/images/rayesmodes/logo.png" alt="Rayes Modes" className="h-10 md:h-12 w-auto" />
           </Link>
 
           <nav className="hidden lg:flex items-center gap-x-8">
