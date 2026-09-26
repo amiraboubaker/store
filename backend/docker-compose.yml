@@ -36,9 +36,7 @@ services:
 
   backend:
     image: amira100/rayesmodes-back-app
-    build:
-      context: .
-      dockerfile: Dockerfile
+    container_name: rayesmodes-backend
     ports:
       - "${BACKEND_PORT:-5000}:5000"
     env_file:
