@@ -139,6 +139,16 @@ const roleMiddleware = (allowedRoles) => {
  * Error handling middleware
  */
 const errorHandler = (err, req, res, next) => {
+    // Rejected by the CORS allowlist (thrown by the cors middleware)
+    if (err.message && err.message.startsWith('CORS blocked:')) {
+        return res.status(403).json({
+            status: 'error',
+            code: 'CORS_ORIGIN_NOT_ALLOWED',
+            message: 'Origin is not allowed',
+            data: null
+        });
+    }
+
     // Payload too large
     if (err.type === 'entity.too.large' || err.name === 'PayloadTooLargeError') {
         return res.status(413).json({

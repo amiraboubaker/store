@@ -55,7 +55,7 @@ services:
       JWT_EXPIRATION: ${JWT_EXPIRATION:-24h}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-CHANGE_ME_GENERATE_SECURE_SECRET}
       JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION:-7d}
-      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+      CORS_ORIGIN: ${CORS_ORIGIN:-https://rayesmodes.smartdeveloper.tn,https://www.rayesmodes.smartdeveloper.tn,http://localhost:3000}
     depends_on:
       mysql:
         condition: service_healthy

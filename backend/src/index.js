@@ -18,12 +18,38 @@ const app = express();
  */
 
 // CORS Configuration
+// CORS_ORIGIN is a comma separated allowlist (e.g. "https://a.com,https://b.com").
+// When the request origin is allowed we echo it back instead of sending "*",
+// because browsers reject "Access-Control-Allow-Origin: *" on credentialed
+// requests and on any preflight whose origin must match the caller's site.
+const allowedOrigins = (process.env.CORS_ORIGIN || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+const allowAllOrigins = allowedOrigins.length === 0 || allowedOrigins.includes('*');
+
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : '*',
+    origin: (origin, callback) => {
+        // Same-origin / non-CORS requests (curl, server-to-server) have no Origin.
+        if (!origin) return callback(null, true);
+        if (allowAllOrigins || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        return callback(new Error(`CORS blocked: origin ${origin} is not allowed`));
+    },
     credentials: true,
-    optionsSuccessStatus: 200
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    exposedHeaders: ['Content-Range', 'X-Total-Count'],
+    maxAge: 86400,
+    optionsSuccessStatus: 204
 };
 app.use(cors(corsOptions));
+
+// Preflight requests for every API route must terminate here, before the
+// route handlers, the SPA fallback and the 404 handler.
+app.options('*', cors(corsOptions));
 
 // Body Parser
 app.use(express.json({ limit: '10kb', verify: (req, res, buf) => {
