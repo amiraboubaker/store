@@ -189,19 +189,6 @@ const setupRoutes = (User, Product, Cart, Order, OrderItem, Payment, AdminAction
     const frontendDir = path.join(__dirname, '..', 'public', 'frontend');
     app.use(express.static(frontendDir));
 
-    // SPA fallback: any non-API GET request that wasn't matched by a route
-    // or static file should return the frontend index.html
-    app.get('*', (req, res) => {
-      const apiPrefixes = [
-        '/api', '/auth', '/admin', '/customer', '/products',
-        '/cart', '/checkout', '/contact', '/admin-ui', '/health'
-      ];
-      const isApi = apiPrefixes.some(prefix => req.path.startsWith(prefix));
-      if (!isApi) {
-        res.sendFile(path.join(frontendDir, 'index.html'));
-      }
-    });
-
     // Admin API (every route is restricted to the admin role by the router)
     app.use('/admin', adminRoutes({ User, Product, Order, OrderItem, AdminActionLog }));
 
@@ -210,6 +197,21 @@ const setupRoutes = (User, Product, Cart, Order, OrderItem, Payment, AdminAction
     app.use('/cart', cartRoutes(User, Product, Cart));
     app.use('/checkout', checkoutRoutes(User, Product, Cart, Order, OrderItem, Payment));
     app.use('/contact', contactRoutes(Contact));
+
+    // SPA fallback: any non-API GET request that wasn't matched by a route
+    // or static file should return the frontend index.html
+    app.get('*', (req, res, next) => {
+      const apiPrefixes = [
+        '/api', '/auth', '/admin', '/customer', '/products',
+        '/cart', '/checkout', '/contact', '/admin-ui', '/health'
+      ];
+      const isApi = apiPrefixes.some(prefix => req.path.startsWith(prefix));
+      if (!isApi) {
+        res.sendFile(path.join(frontendDir, 'index.html'));
+      } else {
+        next();
+      }
+    });
 
     /**
      * 404 Handler
