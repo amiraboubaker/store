@@ -1,0 +1,9 @@
+services:
+  frontend:
+    image: amira100/rayesmodes-app
+    container_name: rayesmodes-frontend
+    environment:
+      - FRONTEND_PORT=${FRONTEND_PORT:-3000}
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    restart: unless-stopped
