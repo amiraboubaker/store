@@ -105,6 +105,19 @@ ensure_env_file() {
     warn "created $target from the example - review it before going live."
 }
 
+# --- executable bits ---------------------------------------------------------
+# Git only tracks one execute bit per file, and a checkout on a filesystem or
+# core.fileMode=false drops it. The entrypoints are documented as `./deploy.sh`,
+# so restore the bit on every sync instead of relying on the clone.
+ensure_executable() {
+    local f
+    for f in devops-scripts/deploy.sh \
+             devops-scripts/backend/deploy.sh \
+             devops-scripts/frontend/deploy.sh; do
+        [ -f "$1/$f" ] && chmod +x "$1/$f" 2>/dev/null || true
+    done
+}
+
 # --- repository sync ---------------------------------------------------------
 # sync_repo <app_dir> <repo_url> <branch>
 # Clones the repository on first run, otherwise fast-forwards the tracked branch.
@@ -151,6 +164,7 @@ sync_repo() {
         mkdir -p "$(dirname "$app_dir")"
         git clone --branch "$branch" --depth 1 "$repo_url" "$app_dir"
     fi
+    ensure_executable "$app_dir"
     ok "repository in sync ($(git -C "$app_dir" rev-parse --short HEAD))"
 }
 

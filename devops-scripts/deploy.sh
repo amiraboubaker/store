@@ -27,6 +27,7 @@ BACKEND="$DEVOPS_DIR/backend/deploy.sh"
 FRONTEND="$DEVOPS_DIR/frontend/deploy.sh"
 
 require_docker
+ensure_executable "$DEVOPS_DIR/.."
 ensure_env_file "$DEVOPS_DIR" "$DEVOPS_DIR/.env.example"
 ensure_env_file "$DEVOPS_DIR/backend" "$DEVOPS_DIR/backend/.env.example"
 ensure_env_file "$DEVOPS_DIR/frontend" "$DEVOPS_DIR/frontend/.env.example"

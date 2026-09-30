@@ -25,6 +25,8 @@ SERVICE="${2:-}"
 shift || true
 EXTRA_ARGS=("$@")
 
+ensure_executable "$STACK_DIR/.."
+
 load_env "$DEVOPS_ROOT/.env" "$STACK_DIR/.env"
 APP_DIR="${APP_DIR:-/opt/store}"
 REPO_URL="${REPO_URL:-}"
