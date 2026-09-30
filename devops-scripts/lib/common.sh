@@ -7,7 +7,8 @@
 
 set -euo pipefail
 
-DEVOPS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# this file lives in devops-scripts/lib, so DEVOPS_ROOT is its parent
+DEVOPS_ROOT="$(cd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" && pwd)"
 
 # --- output ------------------------------------------------------------------
 if [ -t 1 ]; then
