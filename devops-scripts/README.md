@@ -97,6 +97,61 @@ cd frontend && ./deploy.sh up && ./deploy.sh status
 `pull` is the command you need after changing any `VITE_*` value: those are
 compiled into the JavaScript bundle, so a restart alone will not pick them up.
 
+## Using `docker compose` directly
+
+`deploy.sh` is a convenience wrapper. If you would rather drive Compose yourself,
+run these commands from inside the cloned repository. Two things the wrapper
+does for you have to be done by hand: it creates the external network, and it
+generates the `.env` files.
+
+```bash
+cd /opt/store/devops-scripts
+
+# 1. the shared network, ONCE per machine
+docker network create store-net
+
+# 2. the .env files, ONCE (or after a fresh clone)
+cp .env.example .env
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
+```
+
+Then replace every `GENERATE` value in `backend/.env` with a real secret:
+
+```bash
+cd backend
+sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$(openssl rand -base64 24 | tr -d '\n=+/' | cut -c1-28)|" .env
+sed -i "s|^DB_ROOT_PASSWORD=.*|DB_ROOT_PASSWORD=$(openssl rand -base64 24 | tr -d '\n=+/' | cut -c1-28)|" .env
+sed -i "s|^JWT_SECRET=.*|JWT_SECRET=$(openssl rand -hex 32)|" .env
+sed -i "s|^JWT_REFRESH_SECRET=.*|JWT_REFRESH_SECRET=$(openssl rand -hex 32)|" .env
+sed -i "s|^ADMIN_PASSWORD=.*|ADMIN_PASSWORD=$(openssl rand -base64 24 | tr -d '\n=+/' | cut -c1-28)|" .env
+chmod 600 .env
+grep GENERATE .env   # must print nothing
+cd ..
+```
+
+Edit `backend/.env` (`CORS_ORIGIN`) and `frontend/.env` (`VITE_API_URL`) to your
+real origins, then start the stacks:
+
+```bash
+cd backend  && docker compose up -d --build
+cd ../frontend && docker compose up -d --build
+```
+
+The two stacks are independent - the frontend only needs the backend's *URL*,
+which is compiled into its bundle - so the order does not matter.
+
+```bash
+docker compose ps                 # state of this stack
+docker compose logs -f            # follow logs
+docker compose down               # stop (data volume kept)
+docker compose down --volumes     # stop and delete the database
+```
+
+`docker compose up -d --build` builds from `../../backend/Dockerfile` and
+`../../frontend/Dockerfile`, so it must be run from inside the repository.
+After a `git pull`, run it again with `--build` to pick up code changes.
+
 ## How `up` works
 
 1. Creates `.env` from `.env.example` on the first run and replaces every
