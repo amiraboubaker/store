@@ -55,10 +55,11 @@ root/
 │   ├── constants.ts       # Shared enums (categories, statuses, etc.)
 │   └── types.ts           # Shared TypeScript interfaces
 │
-├── docker/
-│   ├── Dockerfile.frontend
-│   ├── Dockerfile.backend
-│   └── docker-compose.yml
+├── devops-scripts/         # VPS deployment stacks
+│   ├── deploy.sh           # orchestrator for both stacks
+│   ├── lib/common.sh       # shared shell helpers
+│   ├── backend/            # VPS stack: mysql + backend
+│   └── frontend/           # VPS stack: frontend
 │
 ├── README.md
 └── .gitignore
@@ -124,34 +125,87 @@ npm run test     # Run Jest tests
 
 ## Docker
 
-The backend and frontend each have an independent `docker-compose.yml`. Log in
-to Docker Hub, then build and push both images from their respective folders:
+Each app owns its own `Dockerfile` and `docker-compose.yml`, and a `devops-scripts/`
+folder holds the VPS deployment stacks. See **[devops-scripts/README.md](devops-scripts/README.md)**
+for the full VPS walkthrough.
+
+```text
+backend/
+├── Dockerfile              # node:20 + production deps, runs as `node` on :5000
+└── docker-compose.yml      # local stack: mysql + phpmyadmin + backend
+frontend/
+├── Dockerfile              # multi-stage: vite build -> nginx:alpine on :80
+├── nginx.conf              # SPA fallback, gzip, cache headers, /healthz
+└── docker-compose.yml      # local stack: frontend only
+devops-scripts/
+├── deploy.sh               # runs both VPS stacks in order
+├── backend/                # VPS stack: mysql + backend
+└── frontend/               # VPS stack: frontend
+```
+
+### Local stacks
 
 ```bash
-docker login
+cd backend  && docker compose up -d --build   # API on :5000, phpMyAdmin on :8080
+cd frontend && docker compose up -d --build   # site on :3000
+```
 
+Copy `backend/.env.example` to `backend/.env` and `frontend/.env.example` to
+`frontend/.env` first. The backend compose file requires `DB_PASSWORD` and
+`DB_ROOT_PASSWORD` to be set, and `DB_USER` must not be `root` (MySQL rejects
+`MYSQL_USER=root`).
+
+These local stacks use their own containers, volume and network, so they never
+clash with the devops-scripts stacks. They do bind the same host ports, so stop
+one before starting the other. Teardown:
+
+```bash
+cd backend  && docker compose down          # add -v to also drop the local db
+cd frontend && docker compose down
+```
+
+### Native development (no Docker)
+
+`backend/.env` is Docker-oriented (`DB_HOST=mysql`). For native runs, override
+the database with SQLite in your shell — dotenv never overwrites variables that
+are already exported:
+
+```bash
+# terminal 1 - backend on :5000 with SQLite
 cd backend
-docker compose build
-docker compose push
+$env:NODE_ENV="development"; $env:DB_DIALECT="sqlite"; $env:DB_HOST="sqlite"; npm run dev
 
-cd ../frontend
-docker compose build
-docker compose push
+# terminal 2 - vite dev server on :5173
+cd frontend
+npm run dev
 ```
 
-Set the Docker Hub namespace and optional image settings before building:
+`CORS_ORIGIN` in `backend/.env` must list `http://localhost:5173` for this to
+work.
+
+### Deploying to a VPS
+
+The server only needs Docker and a clone of this repository. `deploy.sh` clones
+or updates the code, generates secrets, builds both images locally and starts
+the containers:
 
 ```bash
-# PowerShell
-$env:DOCKERHUB_USERNAME = "your-dockerhub-username"
-$env:IMAGE_TAG = "latest"
-$env:VITE_API_URL = "http://localhost:5000"
+git clone https://github.com/amiraboubaker/store.git /tmp/store
+cd /tmp/store/devops-scripts
+cp .env.example .env          # set REPO_URL, REPO_BRANCH
+./deploy.sh init              # creates backend/.env + frontend/.env with secrets
+# set CORS_ORIGIN (backend) and VITE_API_URL (frontend) to your real origins
+./deploy.sh up                # then open the URLs it prints
 ```
 
-The default image names are `couture-backend` and `couture-frontend`. Override
-them with `BACKEND_IMAGE_NAME` and `FRONTEND_IMAGE_NAME`. The backend uses
-`.env` for its runtime configuration, while `VITE_API_URL` is a frontend build
-argument.
+`./deploy.sh status | logs | pull | restart | down` manage the running stacks.
+
+The API and the frontend are served from **different origins** on purpose. The
+SPA calls `${VITE_API_URL}/products` while the backend also owns `/products` as a
+server route, so serving both from one origin would make the two ambiguous.
+`VITE_API_URL` (frontend) and `CORS_ORIGIN` (backend) must be kept in sync, and
+changing `VITE_*` requires a rebuild since those values are inlined into the
+bundle.
 
 ## Scaling Guidelines
 

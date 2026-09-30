@@ -1,9 +1,34 @@
+# Local development / image build stack for the frontend.
+# Production deployment lives in ../devops-scripts/frontend/.
+#
+# `VITE_API_URL` must be the PUBLIC, absolute URL of the backend, because the
+# SPA builds its API calls as `${VITE_API_URL}/<route>` and the backend also
+# serves `/products`, `/cart`, `/admin`... as SPA routes. Keeping the API on a
+# different origin avoids that route collision and is why the backend needs a
+# matching CORS_ORIGIN.
+#
+# The container name and network are deliberately NOT pinned here, so this stack
+# can run at the same time as the devops-scripts stacks without clashing.
+
+name: store-frontend
+
 services:
   frontend:
-    image: amira100/rayesmodes-app
-    container_name: rayesmodes-frontend
-    env_file:
-      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:?VITE_API_URL is required - copy .env.example to .env}
+        VITE_EMAILJS_PUBLIC_KEY: ${VITE_EMAILJS_PUBLIC_KEY:-}
+        VITE_EMAILJS_SERVICE_ID: ${VITE_EMAILJS_SERVICE_ID:-}
+        VITE_EMAILJS_TEMPLATE_ID: ${VITE_EMAILJS_TEMPLATE_ID:-}
+    image: ${FRONTEND_IMAGE_NAME:-rayesmodes-frontend}:${IMAGE_TAG:-latest}
+    restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-3000}:80"
-    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

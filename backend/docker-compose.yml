@@ -1,44 +1,58 @@
+# Local development / image build stack for the backend.
+# Production deployment lives in ../devops-scripts/backend/.
+#
+# Container names, the database volume and the network are deliberately NOT
+# pinned here, so this stack can run at the same time as the devops-scripts
+# stacks without clashing. Use `docker compose down` here and
+# `cd ../devops-scripts/backend && ./deploy.sh status` to tell them apart.
+
+name: store-backend
+
 services:
   mysql:
     image: mysql:8.4
-    container_name: store-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?DB_ROOT_PASSWORD is required - copy .env.example to .env}
       MYSQL_DATABASE: ${DB_NAME:-store}
       MYSQL_USER: ${DB_USER:-store_user}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-store_user_password}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required - copy .env.example to .env}
     ports:
-      - "${DB_PORT:-3307}:3306"
+      - "${DB_PUBLIC_PORT:-3307}:3306"
     volumes:
       - db-data:/var/lib/mysql
-      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql:ro
+      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/01-create_tables.sql:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$${MYSQL_ROOT_PASSWORD}"]
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h 127.0.0.1 -u root -p\"$$MYSQL_ROOT_PASSWORD\" --silent",
+        ]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 30s
+      retries: 10
+      start_period: 40s
 
-  phpadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: store-phpadmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:5.2
     restart: unless-stopped
     ports:
       - "${PHPADMIN_PORT:-8080}:80"
     environment:
       PMA_HOST: mysql
+      PMA_PORT: 3306
       PMA_USER: root
-      PMA_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+      PMA_PASSWORD: ${DB_ROOT_PASSWORD:?DB_ROOT_PASSWORD is required}
     depends_on:
       mysql:
         condition: service_healthy
 
   backend:
-    image: amira100/rayesmodes-back-app
-    container_name: rayesmodes-backend
-    ports:
-      - "${BACKEND_PORT:-5000}:5000"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${BACKEND_IMAGE_NAME:-rayesmodes-backend}:${IMAGE_TAG:-latest}
+    restart: unless-stopped
     env_file:
       - path: .env
         required: false
@@ -49,17 +63,25 @@ services:
       DB_HOST: mysql
       DB_PORT: 3306
       DB_USER: ${DB_USER:-store_user}
-      DB_PASSWORD: ${DB_PASSWORD:-store_user_password}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
       DB_NAME: ${DB_NAME:-store}
-      JWT_SECRET: ${JWT_SECRET:-CHANGE_ME_GENERATE_SECURE_SECRET}
-      JWT_EXPIRATION: ${JWT_EXPIRATION:-24h}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-CHANGE_ME_GENERATE_SECURE_SECRET}
-      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION:-7d}
-      CORS_ORIGIN: ${CORS_ORIGIN:-https://rayesmodes.smartdeveloper.tn,https://www.rayesmodes.smartdeveloper.tn,http://localhost:3000}
+    ports:
+      - "${BACKEND_PORT:-5000}:5000"
     depends_on:
       mysql:
         condition: service_healthy
-    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://127.0.0.1:5000/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
 
 volumes:
   db-data:

@@ -1,6 +1,13 @@
 node_modules
 dist
-npm-debug.log
+build
+npm-debug.log*
 .env
+.env.*
+coverage
 .git
 .gitignore
+devops-scripts
+Dockerfile
+docker-compose.yml
+.dockerignore
