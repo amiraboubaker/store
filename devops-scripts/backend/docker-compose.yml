@@ -36,8 +36,10 @@ services:
         ]
       interval: 10s
       timeout: 5s
-      retries: 10
-      start_period: 40s
+      retries: 20
+      # generous: on a small VPS the first boot also runs
+      # sql/create_tables.sql, which can take well over a minute
+      start_period: 90s
     networks:
       - store-net
 

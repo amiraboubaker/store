@@ -126,9 +126,17 @@ sed -i "s|^JWT_SECRET=.*|JWT_SECRET=$(openssl rand -hex 32)|" .env
 sed -i "s|^JWT_REFRESH_SECRET=.*|JWT_REFRESH_SECRET=$(openssl rand -hex 32)|" .env
 sed -i "s|^ADMIN_PASSWORD=.*|ADMIN_PASSWORD=$(openssl rand -base64 24 | tr -d '\n=+/' | cut -c1-28)|" .env
 chmod 600 .env
-grep GENERATE .env   # must print nothing
+
+# verification: must print NOTHING
+grep -E '^[A-Z_]+=GENERATE$' .env
 cd ..
 ```
+
+> Use that exact `grep -E '^[A-Z_]+=GENERATE$'`, not a plain `grep GENERATE .env`.
+> The plain version also matches the `# ...replaces every GENERATE value...`
+> comment in the header of `.env.example`, so it prints a comment line even
+> when every secret is correctly set. The anchored pattern only matches real
+> `KEY=GENERATE` assignments.
 
 Edit `backend/.env` (`CORS_ORIGIN`) and `frontend/.env` (`VITE_API_URL`) to your
 real origins, then start the stacks:
