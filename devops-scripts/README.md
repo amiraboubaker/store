@@ -221,11 +221,11 @@ docker exec store-mysql sh -c 'mysqldump -u root -p"$MYSQL_ROOT_PASSWORD" --all-
 
 ## Security notes
 
-- MySQL and phpMyAdmin bind to `127.0.0.1`; the API and frontend bind to
-  `0.0.0.0` so you can reach them.
-- phpMyAdmin is behind the `debug` compose profile, so it does not start by
-  default. Opt in with:
-  `cd backend && docker compose --env-file .env --profile debug up -d phpmyadmin`
+- MySQL binds to `127.0.0.1`; the API, frontend and phpMyAdmin bind to
+  `0.0.0.0` so you can reach them. phpMyAdmin is then open at
+  `http://SERVER_IP:8081` - restrict it with
+  `PHPADMIN_BIND_ADDRESS=127.0.0.1` plus a tunnel, or keep port `8081` closed
+  in the firewall once you are done with it.
 - All `.env` files are created with mode `600` and are gitignored.
 - Put a firewall in front of the VPS: only `22`, `80` and `443` need to be open
   (plus `5000` if you are testing the API without a reverse proxy).

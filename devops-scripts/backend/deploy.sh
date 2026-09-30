@@ -43,8 +43,9 @@ public_url() {
 }
 
 print_status() {
-    local backend_url
+    local backend_url phpmyadmin_url
     backend_url="$(public_url "${BACKEND_BIND_ADDRESS:-0.0.0.0}" "${BACKEND_PORT:-5000}" http)"
+    phpmyadmin_url="$(public_url "${PHPADMIN_BIND_ADDRESS:-0.0.0.0}" "${PHPADMIN_PORT:-8081}" http)"
     head_ "Backend stack status"
     compose "$STACK_DIR" ps
     head_ "Reachable endpoints"
@@ -53,8 +54,7 @@ print_status() {
     printf '  API info ....... %s/api\n' "$backend_url"
     printf '  Admin API ....... %s/admin\n' "$backend_url"
     printf '  MySQL ......... %s:%s (loopback only)\n' "${DB_BIND_ADDRESS:-127.0.0.1}" "${DB_PUBLIC_PORT:-3306}"
-    printf '  phpMyAdmin ..... %s (only with the "debug" profile)\n' \
-        "http://${DOMAIN:-127.0.0.1}:${PHPADMIN_PORT:-8080}"
+    printf '  phpMyAdmin ..... %s\n' "$phpmyadmin_url"
     if [ -z "${CORS_ORIGIN:-}" ]; then
         warn "CORS_ORIGIN is empty - the frontend browser will be blocked."
     elif printf '%s' "$CORS_ORIGIN" | grep -qE '(^|,)https?://(localhost|127\.0\.0\.1)'; then
