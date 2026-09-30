@@ -55,11 +55,6 @@ root/
 │   ├── constants.ts       # Shared enums (categories, statuses, etc.)
 │   └── types.ts           # Shared TypeScript interfaces
 │
-├── docker/
-│   ├── Dockerfile.frontend
-│   ├── Dockerfile.backend
-│   └── docker-compose.yml
-│
 ├── README.md
 └── .gitignore
 ```
@@ -121,37 +116,6 @@ npm install
 npm run dev      # Start Express with nodemon on :3001
 npm run test     # Run Jest tests
 ```
-
-## Docker
-
-The backend and frontend each have an independent `docker-compose.yml`. Log in
-to Docker Hub, then build and push both images from their respective folders:
-
-```bash
-docker login
-
-cd backend
-docker compose build
-docker compose push
-
-cd ../frontend
-docker compose build
-docker compose push
-```
-
-Set the Docker Hub namespace and optional image settings before building:
-
-```bash
-# PowerShell
-$env:DOCKERHUB_USERNAME = "your-dockerhub-username"
-$env:IMAGE_TAG = "latest"
-$env:VITE_API_URL = "http://localhost:5000"
-```
-
-The default image names are `couture-backend` and `couture-frontend`. Override
-them with `BACKEND_IMAGE_NAME` and `FRONTEND_IMAGE_NAME`. The backend uses
-`.env` for its runtime configuration, while `VITE_API_URL` is a frontend build
-argument.
 
 ## Scaling Guidelines
 

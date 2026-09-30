@@ -47,8 +47,6 @@ backend/uploads/*
 dist/
 build/
 
-# Docker Images
-
 # Database
 *.sqlite
 database.sqlite
