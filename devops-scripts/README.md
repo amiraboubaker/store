@@ -97,6 +97,30 @@ cd frontend && ./deploy.sh up && ./deploy.sh status
 `pull` is the command you need after changing any `VITE_*` value: those are
 compiled into the JavaScript bundle, so a restart alone will not pick them up.
 
+### Changing the database schema
+
+`pull` deploys code but never changes the shape of the database. MySQL lives in
+the `db-data` volume, which outlives a redeploy, and `sequelize.sync({ alter:
+true })` only reconciles tables whose models still exist — it will not drop a
+table whose model was deleted. After removing a model, reset explicitly:
+
+```bash
+cd backend
+CONFIRM_DB_RESET=yes ./deploy.sh db-reset   # drops every table, recreates products + contacts
+```
+
+This deletes all rows in all tables, so back up first:
+
+```bash
+docker compose exec mysql mysqldump -u root -p"$DB_ROOT_PASSWORD" store > backup.sql
+```
+
+The command refuses to run without `CONFIRM_DB_RESET=yes` so a mistyped command
+cannot wipe production data. Keep `backend/scripts/reset-database.js` in step with
+`backend/src/models/` and `backend/sql/create_tables.sql`; the three are
+redundant descriptions of the same schema, and disagreement between them is what
+produces a database that disagrees with the code.
+
 ## Using `docker compose` directly
 
 `deploy.sh` is a convenience wrapper. If you would rather drive Compose yourself,
