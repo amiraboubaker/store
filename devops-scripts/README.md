@@ -221,11 +221,14 @@ docker exec store-mysql sh -c 'mysqldump -u root -p"$MYSQL_ROOT_PASSWORD" --all-
 
 ## Security notes
 
-- MySQL binds to `127.0.0.1`; the API, frontend and phpMyAdmin bind to
-  `0.0.0.0` so you can reach them. phpMyAdmin is then open at
-  `http://SERVER_IP:8081` - restrict it with
-  `PHPADMIN_BIND_ADDRESS=127.0.0.1` plus a tunnel, or keep port `8081` closed
-  in the firewall once you are done with it.
+- MySQL, the API and phpMyAdmin bind to `127.0.0.1`; they are reached through a
+  reverse proxy that terminates TLS for `app.`, `api.` and `db.`. Without a
+  proxy, set `BACKEND_BIND_ADDRESS` / `PHPADMIN_BIND_ADDRESS` to `0.0.0.0` to
+  reach them directly on their ports.
+- MySQL itself speaks its own protocol on 3306 and is never served over HTTP.
+  The `db.` hostname publishes phpMyAdmin, the browser UI for that database.
+  Native clients connect over `ssh -L 3306:127.0.0.1:3306`.
 - All `.env` files are created with mode `600` and are gitignored.
-- Put a firewall in front of the VPS: only `22`, `80` and `443` need to be open
-  (plus `5000` if you are testing the API without a reverse proxy).
+- With the reverse proxy in place, only `22`, `80` and `443` need to be open in
+  the firewall. `3306`, `5000` and `8081` stay bound to loopback and must not
+  be exposed.

@@ -55,7 +55,7 @@ print_status() {
     printf '  API health ..... %s/health\n' "$backend_url"
     printf '  API info ....... %s/api\n' "$backend_url"
     printf '  Admin API ....... %s/admin\n' "$backend_url"
-    printf '  MySQL ......... %s:%s (loopback only)\n' "${DB_BIND_ADDRESS:-127.0.0.1}" "${DB_PUBLIC_PORT:-3306}"
+    printf '  MySQL ......... %s:%s (loopback only, TCP - no https)\n' "${DB_BIND_ADDRESS:-127.0.0.1}" "${DB_PUBLIC_PORT:-3306}"
     printf '  phpMyAdmin ..... %s\n' "$phpmyadmin_url"
     if [ -z "${CORS_ORIGIN:-}" ]; then
         warn "CORS_ORIGIN is empty - the frontend browser will be blocked."
