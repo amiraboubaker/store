@@ -26,6 +26,10 @@ COPY --chown=node:node package.json ./
 COPY --chown=node:node src ./src
 COPY --chown=node:node public ./public
 COPY --chown=node:node sql ./sql
+# Operational scripts (reset-database.js) are run on demand via
+# `docker compose exec backend node scripts/reset-database.js`. Without this
+# COPY the container has no way to drop tables left behind by removed models.
+COPY --chown=node:node scripts ./scripts
 
 USER node
 
