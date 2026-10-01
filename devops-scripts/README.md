@@ -102,24 +102,28 @@ compiled into the JavaScript bundle, so a restart alone will not pick them up.
 `pull` deploys code but never changes the shape of the database. MySQL lives in
 the `db-data` volume, which outlives a redeploy, and `sequelize.sync({ alter:
 true })` only reconciles tables whose models still exist — it will not drop a
-table whose model was deleted. After removing a model, reset explicitly:
+table whose model was deleted. After removing a model, reset explicitly.
+
+These three commands resolve their own location, so they work from any
+directory and none of them needs a `cd`:
 
 ```bash
-cd backend
-CONFIRM_DB_RESET=yes ./deploy.sh db-reset   # drops every table, recreates products + contacts
+/opt/store/devops-scripts/backend/deploy.sh pull     # deploy the new code first
+/opt/store/devops-scripts/backend/deploy.sh db-backup > backup.sql
+CONFIRM_DB_RESET=yes /opt/store/devops-scripts/backend/deploy.sh db-reset
+/opt/store/devops-scripts/backend/deploy.sh db-tables
 ```
 
-This deletes all rows in all tables, so back up first:
+`db-reset` deletes all rows in all tables, so take the backup first. It refuses
+to run without `CONFIRM_DB_RESET=yes`, so a mistyped command cannot wipe
+production data, and it prints the resulting table list when it finishes.
+`db-tables` runs the same listing on its own, which is the quickest way to
+confirm from the shell what phpMyAdmin is showing.
 
-```bash
-docker compose exec mysql mysqldump -u root -p"$DB_ROOT_PASSWORD" store > backup.sql
-```
-
-The command refuses to run without `CONFIRM_DB_RESET=yes` so a mistyped command
-cannot wipe production data. Keep `backend/scripts/reset-database.js` in step with
-`backend/src/models/` and `backend/sql/create_tables.sql`; the three are
-redundant descriptions of the same schema, and disagreement between them is what
-produces a database that disagrees with the code.
+Keep `backend/scripts/reset-database.js` in step with `backend/src/models/` and
+`backend/sql/create_tables.sql`; the three are redundant descriptions of the same
+schema, and disagreement between them is what produces a database that disagrees
+with the code.
 
 ## Using `docker compose` directly
 
