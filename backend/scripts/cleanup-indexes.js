@@ -8,7 +8,7 @@ const s = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB
     logging: false
 });
 
-const tables = ['Users', 'Products'];
+const tables = ['Products'];
 
 (async () => {
     for (const table of tables) {

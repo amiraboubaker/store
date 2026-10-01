@@ -1,8 +1,8 @@
 const ProductService = require('../services/ProductService');
 
 class ProductController {
-    constructor(Product, ProductImage) {
-        this.productService = new ProductService(Product, ProductImage);
+    constructor(Product) {
+        this.productService = new ProductService(Product);
     }
 
     async listProducts(req, res, next) {
