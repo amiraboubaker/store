@@ -8,6 +8,7 @@
 #   ./deploy.sh logs      follow logs (optionally: ./deploy.sh logs backend)
 #   ./deploy.sh status    show container state and the public URLs
 #   ./deploy.sh pull      rebuild the backend image and recreate the backend
+#   ./deploy.sh db-reset  drop every table and recreate products + contacts
 #   ./deploy.sh shell     open a shell inside the backend container
 #
 # Everything it needs is read from ./.env (created from ./.env.example on the
@@ -54,7 +55,6 @@ print_status() {
     printf '  API base ....... %s\n' "$backend_url"
     printf '  API health ..... %s/health\n' "$backend_url"
     printf '  API info ....... %s/api\n' "$backend_url"
-    printf '  Admin API ....... %s/admin\n' "$backend_url"
     printf '  MySQL ......... %s:%s (loopback only, TCP - no https)\n' "${DB_BIND_ADDRESS:-127.0.0.1}" "${DB_PUBLIC_PORT:-3306}"
     printf '  phpMyAdmin ..... %s\n' "$phpmyadmin_url"
     if [ -z "${CORS_ORIGIN:-}" ]; then
@@ -125,13 +125,29 @@ case "$COMMAND" in
         print_status
         ;;
 
+    db-reset)
+        # Deploying new code does NOT change the database on its own: MySQL
+        # lives in the db-data volume, which survives a redeploy, and
+        # sequelize.sync({ alter: true }) only reconciles tables whose models
+        # exist. It never drops a table whose model was deleted. This command
+        # does that part. EVERY ROW IN EVERY TABLE IS LOST.
+        require_docker
+        load_env "$STACK_DIR/.env"
+        warn "about to DROP EVERY TABLE in the '${DB_NAME:-store}' database"
+        warn "backup first with: compose exec mysql mysqldump -u root -p store > backup.sql"
+        if [ "${CONFIRM_DB_RESET:-}" != "yes" ]; then
+            die "refusing to reset. re-run with CONFIRM_DB_RESET=yes once you have a backup."
+        fi
+        compose "$STACK_DIR" exec -T backend node scripts/reset-database.js
+        ;;
+
     shell)
         require_docker
         compose "$STACK_DIR" exec backend sh
         ;;
 
     *)
-        printf 'usage: %s {up|down|restart|logs [service]|status|pull|shell}\n' "$0" >&2
+        printf 'usage: %s {up|down|restart|logs [service]|status|pull|db-reset|shell}\n' "$0" >&2
         exit 2
         ;;
 esac
