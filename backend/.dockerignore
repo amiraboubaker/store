@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log*
+.env
+.env.*
+database.sqlite
+*.sqlite
+coverage
+.nyc_output
+.git
+.gitignore
+devops-scripts
+Dockerfile
+docker-compose.yml
+.dockerignore

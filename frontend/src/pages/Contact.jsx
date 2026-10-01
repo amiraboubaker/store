@@ -6,7 +6,6 @@ import { contact } from '../data/company'
 import { useLanguage } from '../context/LanguageContext'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
-console.log('[Contact] API URL:', API)
 
 function validate(form, t) {
   const errors = {}
@@ -60,8 +59,10 @@ function Contact() {
         body: JSON.stringify(form),
       })
       if (!res.ok) {
-        const data = await res.json()
-        console.error('Contact save failed:', res.status, data)
+        const text = await res.text()
+        let data = {}
+        try { data = JSON.parse(text) } catch {}
+        console.error('Contact save failed:', res.status, text)
         setServerError(data.errors?.[0]?.msg || data.message || t('contact_err_server'))
         return
       }

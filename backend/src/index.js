@@ -176,6 +176,17 @@ const seedAdmin = async (User) => {
  * Routes Setup (requires User model to be defined)
  */
 const setupRoutes = (User, Product, Cart, Order, OrderItem, Payment, AdminActionLog, Contact) => {
+    // Root
+    app.get('/', (req, res) => {
+        res.status(200).json({
+            status: 'success',
+            message: 'Couture Supplies API is running',
+            version: '1.0.0',
+            health: '/health',
+            api: '/api'
+        });
+    });
+
     // Health Check
     app.get('/health', (req, res) => {
         res.status(200).json({
@@ -233,7 +244,8 @@ const setupRoutes = (User, Product, Cart, Order, OrderItem, Payment, AdminAction
       ];
       const isApi = apiPrefixes.some(prefix => req.path.startsWith(prefix));
       if (!isApi) {
-        res.sendFile(path.join(frontendDir, 'index.html'));
+        const indexPath = path.join(frontendDir, 'index.html');
+        res.sendFile(indexPath, (err) => { if (err) next(); });
       } else {
         next();
       }

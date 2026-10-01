@@ -1,0 +1,45 @@
+# ---------------------------------------------------------------------------
+# Production stack for the FRONTEND (Vite build served by nginx).
+# Run it through ./deploy.sh, not with `docker compose` directly.
+#
+# The image is BUILT on the VPS from ../../frontend/Dockerfile.
+#
+# VITE_API_URL must be the PUBLIC, absolute URL of the backend, because the SPA
+# builds its API calls as `${VITE_API_URL}/<route>` and the backend also owns
+# /products, /cart, /admin... as server routes. A different origin keeps the two
+# from colliding and is why CORS_ORIGIN on the backend must list this stack's
+# public origin.
+# ---------------------------------------------------------------------------
+
+name: ${COMPOSE_PROJECT_NAME:-store-frontend}
+
+services:
+  frontend:
+    build:
+      context: ../../frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:?VITE_API_URL is required - set it in .env}
+        VITE_EMAILJS_PUBLIC_KEY: ${VITE_EMAILJS_PUBLIC_KEY:-}
+        VITE_EMAILJS_SERVICE_ID: ${VITE_EMAILJS_SERVICE_ID:-}
+        VITE_EMAILJS_TEMPLATE_ID: ${VITE_EMAILJS_TEMPLATE_ID:-}
+    image: ${FRONTEND_IMAGE_NAME:-rayesmodes-frontend}:${IMAGE_TAG:-latest}
+    container_name: ${FRONTEND_CONTAINER:-rayesmodes-frontend}
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "${FRONTEND_BIND_ADDRESS:-0.0.0.0}:${FRONTEND_PORT:-80}:80"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - store-net
+
+networks:
+  store-net:
+    external: true
+    name: ${STORE_NETWORK:-store-net}
