@@ -8,8 +8,13 @@
 #   ./deploy.sh logs      follow logs (optionally: ./deploy.sh logs backend)
 #   ./deploy.sh status    show container state and the public URLs
 #   ./deploy.sh pull      rebuild the backend image and recreate the backend
+#   ./deploy.sh db-backup dump the database to stdout (redirect it to a file)
 #   ./deploy.sh db-reset  drop every table and recreate products + contacts
+#   ./deploy.sh db-tables list the tables currently in the database
 #   ./deploy.sh shell     open a shell inside the backend container
+#
+# The db-* commands work from any directory: this script resolves its own
+# location, so it never depends on the current working directory.
 #
 # Everything it needs is read from ./.env (created from ./.env.example on the
 # first run) and from the shared ../.env (REPO_URL / REPO_BRANCH / APP_DIR).
@@ -63,6 +68,14 @@ print_status() {
         warn "CORS_ORIGIN still lists localhost: $CORS_ORIGIN"
         warn "Replace it with this server's real frontend origin or the browser will refuse API calls."
     fi
+}
+
+print_db_tables() {
+    # Root password is already in the environment; --skip-column-names keeps the
+    # output to bare table names so it is readable after `db-reset`.
+    head_ "Tables in '${DB_NAME:-store}'"
+    compose "$STACK_DIR" exec -T \
+        mysql mysql -u root "-p${DB_ROOT_PASSWORD:-}" -N -e "SHOW TABLES;" 2>/dev/null
 }
 
 case "$COMMAND" in
@@ -125,6 +138,21 @@ case "$COMMAND" in
         print_status
         ;;
 
+    db-backup)
+        # Write a dump to stdout so the caller decides where it lands. The root
+        # password comes from .env, not from a prompt: inside `docker compose
+        # exec` there is no TTY, so `-p` with no argument fails or hangs, and a
+        # mysqldump that cannot authenticate writes an empty file rather than
+        # reporting an error you would notice.
+        require_docker
+        load_env "$STACK_DIR/.env"
+        if [ -z "${DB_ROOT_PASSWORD:-}" ]; then
+            die "DB_ROOT_PASSWORD is empty. It is generated into $STACK_DIR/.env by deploy.sh."
+        fi
+        compose "$STACK_DIR" exec -T \
+            mysql mysqldump -u root "-p${DB_ROOT_PASSWORD}" --single-transaction "${DB_NAME:-store}"
+        ;;
+
     db-reset)
         # Deploying new code does NOT change the database on its own: MySQL
         # lives in the db-data volume, which survives a redeploy, and
@@ -134,11 +162,18 @@ case "$COMMAND" in
         require_docker
         load_env "$STACK_DIR/.env"
         warn "about to DROP EVERY TABLE in the '${DB_NAME:-store}' database"
-        warn "backup first with: compose exec mysql mysqldump -u root -p store > backup.sql"
+        warn "back up first with: ./deploy.sh db-backup > backup.sql"
         if [ "${CONFIRM_DB_RESET:-}" != "yes" ]; then
             die "refusing to reset. re-run with CONFIRM_DB_RESET=yes once you have a backup."
         fi
         compose "$STACK_DIR" exec -T backend node scripts/reset-database.js
+        print_db_tables
+        ;;
+
+    db-tables)
+        require_docker
+        load_env "$STACK_DIR/.env"
+        print_db_tables
         ;;
 
     shell)
@@ -147,7 +182,7 @@ case "$COMMAND" in
         ;;
 
     *)
-        printf 'usage: %s {up|down|restart|logs [service]|status|pull|db-reset|shell}\n' "$0" >&2
+        printf 'usage: %s {up|down|restart|logs [service]|status|pull|db-backup|db-reset|db-tables|shell}\n' "$0" >&2
         exit 2
         ;;
 esac
