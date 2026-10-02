@@ -15,9 +15,14 @@ class ContactController {
             });
 
             try {
-                await this.mailService.sendContactNotification(entry);
+                const result = await this.mailService.sendContactNotification(entry);
+                if (result && result.skipped) {
+                    console.warn(`Contact #${entry.id} stored but NOT notified: EMAIL_* is not configured`);
+                } else {
+                    console.log(`Contact #${entry.id} stored and notified (${result && result.to ? result.to : 'configured inbox'})`);
+                }
             } catch (mailError) {
-                console.error('Contact notification failed:', mailError.message);
+                console.error(`Contact #${entry.id} stored but notification FAILED: ${mailError.message}`);
             }
 
             res.status(201).json({ status: 'success', data: { id: entry.id } });

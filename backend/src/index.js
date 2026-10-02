@@ -202,7 +202,17 @@ const bootstrap = async () => {
     const { sequelize: db, Product, Contact } = await initializeDatabase();
     sequelize = db;
 
-    setupRoutes(Product, Contact, new MailService());
+    const mailService = new MailService();
+    setupRoutes(Product, Contact, mailService);
+
+    // Printed at boot because a missing EMAIL_* only shows up later, as a
+    // contact that was stored but never reached the inbox.
+    if (mailService.isConfigured()) {
+        const { host, port, to } = mailService.getConfig();
+        console.log(`✓ Contact notifications enabled (${host}:${port} -> ${to})`);
+    } else {
+        console.warn('⚠ Contact notifications disabled: EMAIL_* is not set in backend/.env');
+    }
 
     return { app, Product, Contact, sequelize };
 };
