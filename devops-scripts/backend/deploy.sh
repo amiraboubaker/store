@@ -33,6 +33,12 @@ EXTRA_ARGS=("$@")
 
 ensure_executable "$STACK_DIR/.."
 
+# REPO_URL and APP_DIR live in the SHARED ../.env, not in this stack's .env.
+# That file is gitignored, so it is absent on a fresh checkout. Create it from
+# .env.example before loading it, otherwise this stack cannot even find the
+# repository it is supposed to deploy. The top-level deploy.sh does the same.
+ensure_env_file "$DEVOPS_ROOT" "$DEVOPS_ROOT/.env.example"
+
 load_env "$DEVOPS_ROOT/.env" "$STACK_DIR/.env"
 APP_DIR="${APP_DIR:-/opt/store}"
 REPO_URL="${REPO_URL:-}"
