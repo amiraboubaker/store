@@ -67,29 +67,8 @@ function Contact() {
         return
       }
 
-      const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-      const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID
-      const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
-      if (!EMAILJS_PUBLIC_KEY || !EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !window.emailjs) {
-        setSent(true)
-        return
-      }
-      try {
-        await window.emailjs.send(
-          EMAILJS_SERVICE_ID,
-          EMAILJS_TEMPLATE_ID,
-          {
-            name: form.name,
-            email: form.email,
-            subject: form.subject || 'No subject',
-            message: form.message,
-            to_email: 'amiraboubakeresprims@gmail.com',
-          },
-          EMAILJS_PUBLIC_KEY
-        )
-      } catch (emailError) {
-        console.error('EmailJS error:', emailError)
-      }
+      const data = await res.json().catch(() => ({}))
+      console.log('Contact stored:', data.data)
       setSent(true)
     } catch (error) {
       console.error('Contact submit error:', error)

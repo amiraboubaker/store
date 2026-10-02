@@ -6,6 +6,7 @@ const { Sequelize } = require('sequelize');
 const { errorHandler } = require('./middleware/error');
 const productRoutes = require('./routes/products');
 const contactRoutes = require('./routes/contact');
+const MailService = require('./services/MailService');
 
 const app = express();
 
@@ -120,7 +121,7 @@ const initializeDatabase = async () => {
 /**
  * Routes Setup (requires the Product and Contact models)
  */
-const setupRoutes = (Product, Contact) => {
+const setupRoutes = (Product, Contact, mailService) => {
     // Root
     app.get('/', (req, res) => {
         res.status(200).json({
@@ -160,7 +161,7 @@ const setupRoutes = (Product, Contact) => {
     app.use(express.static(frontendDir));
 
     app.use('/products', productRoutes(Product));
-    app.use('/contact', contactRoutes(Contact));
+    app.use('/contact', contactRoutes(Contact, mailService));
 
     // SPA fallback: any non-API GET request that wasn't matched by a route
     // or static file should return the frontend index.html
@@ -201,7 +202,7 @@ const bootstrap = async () => {
     const { sequelize: db, Product, Contact } = await initializeDatabase();
     sequelize = db;
 
-    setupRoutes(Product, Contact);
+    setupRoutes(Product, Contact, new MailService());
 
     return { app, Product, Contact, sequelize };
 };

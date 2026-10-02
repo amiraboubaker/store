@@ -1,10 +1,11 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const ContactController = require('../controllers/ContactController');
+const MailService = require('../services/MailService');
 
-module.exports = (Contact) => {
+module.exports = (Contact, mailService) => {
     const router = express.Router();
-    const controller = new ContactController(Contact);
+    const controller = new ContactController(Contact, mailService || new MailService());
 
     const validate = [
         body('name').trim().notEmpty().withMessage('Name is required').isLength({ max: 100 }),
