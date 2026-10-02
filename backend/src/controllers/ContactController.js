@@ -14,9 +14,11 @@ class ContactController {
                 message: message.trim()
             });
 
+            let emailSent = false;
             try {
                 const result = await this.mailService.sendContactNotification(entry);
-                if (result && result.skipped) {
+                emailSent = !(result && result.skipped);
+                if (!emailSent) {
                     console.warn(`Contact #${entry.id} stored but NOT notified: EMAIL_* is not configured`);
                 } else {
                     console.log(`Contact #${entry.id} stored and notified (${result && result.to ? result.to : 'configured inbox'})`);
@@ -25,7 +27,9 @@ class ContactController {
                 console.error(`Contact #${entry.id} stored but notification FAILED: ${mailError.message}`);
             }
 
-            res.status(201).json({ status: 'success', data: { id: entry.id } });
+            // The browser retries through EmailJS when this is false, so an SMTP
+            // outage costs a notification instead of the enquiry itself.
+            res.status(201).json({ status: 'success', data: { id: entry.id, emailSent } });
         } catch (error) {
             next(error);
         }

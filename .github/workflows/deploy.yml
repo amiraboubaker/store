@@ -129,6 +129,10 @@ jobs:
           push: true
           build-args: |
             VITE_API_URL=${{ vars.VITE_API_URL }}
+            VITE_EMAILJS_PUBLIC_KEY=${{ vars.VITE_EMAILJS_PUBLIC_KEY }}
+            VITE_EMAILJS_SERVICE_ID=${{ vars.VITE_EMAILJS_SERVICE_ID }}
+            VITE_EMAILJS_TEMPLATE_ID=${{ vars.VITE_EMAILJS_TEMPLATE_ID }}
+            VITE_CONTACT_TO_EMAIL=${{ vars.VITE_CONTACT_TO_EMAIL }}
           tags: ${{ steps.meta-frontend.outputs.tags }}
           labels: ${{ steps.meta-frontend.outputs.labels }}
           cache-from: type=gha,scope=frontend

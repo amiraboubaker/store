@@ -48,7 +48,14 @@ class MailService {
                 host,
                 port,
                 secure: port === 465,
-                auth: { user, pass: password }
+                auth: { user, pass: password },
+                // Without these a blocked outbound port (most VPS providers
+                // drop 25/587) leaves the socket waiting on the OS default,
+                // which would hang the POST /contact request for minutes
+                // instead of failing fast and letting the row be stored.
+                connectionTimeout: 10000,
+                greetingTimeout: 10000,
+                socketTimeout: 20000
             });
         }
         return this.transporter;

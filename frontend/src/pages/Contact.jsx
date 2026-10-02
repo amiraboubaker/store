@@ -41,6 +41,38 @@ function Contact() {
   const [loading, setLoading] = useState(false)
   const { t } = useLanguage()
 
+  const sendByEmailJs = async () => {
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+    if (!publicKey || !serviceId || !templateId || !window.emailjs) {
+      console.error('EmailJS fallback unavailable: the notification was neither sent by the API nor by the browser.')
+      return
+    }
+    // Every field is repeated inside `message` because that is the one variable
+    // the configured template is known to render. Relying on the template's own
+    // {{name}} / {{subject}} placeholders is what let an enquiry arrive with
+    // the sender's details missing.
+    const details = [
+      `Name: ${form.name}`,
+      `Email: ${form.email}`,
+      `Subject: ${form.subject || 'No subject'}`,
+      '',
+      form.message,
+    ].join('\n')
+    try {
+      await window.emailjs.send(serviceId, templateId, {
+        name: form.name,
+        email: form.email,
+        subject: form.subject || 'No subject',
+        message: details,
+        to_email: import.meta.env.VITE_CONTACT_TO_EMAIL || 'amiraboubakeresprims@gmail.com',
+      }, publicKey)
+    } catch (emailError) {
+      console.error('EmailJS fallback failed:', emailError)
+    }
+  }
+
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
     setErrors((prev) => ({ ...prev, [e.target.name]: '' }))
@@ -69,6 +101,14 @@ function Contact() {
 
       const data = await res.json().catch(() => ({}))
       console.log('Contact stored:', data.data)
+
+      // The API reports whether its own SMTP notification went out. When it did
+      // not, the browser is the second channel, so an SMTP outage still reaches
+      // the shop instead of silently dropping the enquiry.
+      if (data.data && data.data.emailSent === false) {
+        await sendByEmailJs()
+      }
+
       setSent(true)
     } catch (error) {
       console.error('Contact submit error:', error)

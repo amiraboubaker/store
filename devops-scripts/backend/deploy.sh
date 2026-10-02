@@ -11,6 +11,7 @@
 #   ./deploy.sh db-backup dump the database to stdout (redirect it to a file)
 #   ./deploy.sh db-reset  drop every table and recreate products + contacts
 #   ./deploy.sh db-tables list the tables currently in the database
+#   ./deploy.sh mail-test check the contact form SMTP path (optionally to one address)
 #   ./deploy.sh shell     open a shell inside the backend container
 #
 # The db-* commands work from any directory: this script resolves its own
@@ -182,13 +183,21 @@ case "$COMMAND" in
         print_db_tables
         ;;
 
+    mail-test)
+        # Diagnoses "the contact form stores rows but no mail arrives" without
+        # submitting a form: reports config, DNS, TCP, auth and send separately.
+        require_docker
+        load_env "$STACK_DIR/.env"
+        compose "$STACK_DIR" exec -T backend node scripts/test-mail.js "$SERVICE"
+        ;;
+
     shell)
         require_docker
         compose "$STACK_DIR" exec backend sh
         ;;
 
     *)
-        printf 'usage: %s {up|down|restart|logs [service]|status|pull|db-backup|db-reset|db-tables|shell}\n' "$0" >&2
+        printf 'usage: %s {up|down|restart|logs [service]|status|pull|db-backup|db-reset|db-tables|mail-test [recipient]|shell}\n' "$0" >&2
         exit 2
         ;;
 esac

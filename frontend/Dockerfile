@@ -13,9 +13,19 @@ RUN npm ci
 COPY . .
 
 # Vite inlines `VITE_*` variables at build time, so they must be present here.
+# VITE_EMAILJS_* are only used as a fallback when the API could not send the
+# contact notification itself (see src/pages/Contact.jsx).
 ARG VITE_API_URL=http://localhost:5000
+ARG VITE_EMAILJS_PUBLIC_KEY=
+ARG VITE_EMAILJS_SERVICE_ID=
+ARG VITE_EMAILJS_TEMPLATE_ID=
+ARG VITE_CONTACT_TO_EMAIL=
 
-ENV VITE_API_URL=${VITE_API_URL}
+ENV VITE_API_URL=${VITE_API_URL} \
+    VITE_EMAILJS_PUBLIC_KEY=${VITE_EMAILJS_PUBLIC_KEY} \
+    VITE_EMAILJS_SERVICE_ID=${VITE_EMAILJS_SERVICE_ID} \
+    VITE_EMAILJS_TEMPLATE_ID=${VITE_EMAILJS_TEMPLATE_ID} \
+    VITE_CONTACT_TO_EMAIL=${VITE_CONTACT_TO_EMAIL}
 
 RUN npm run build
 

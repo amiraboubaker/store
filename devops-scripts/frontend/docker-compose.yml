@@ -20,6 +20,10 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_URL: ${VITE_API_URL:?VITE_API_URL is required - set it in .env}
+        VITE_EMAILJS_PUBLIC_KEY: ${VITE_EMAILJS_PUBLIC_KEY:-}
+        VITE_EMAILJS_SERVICE_ID: ${VITE_EMAILJS_SERVICE_ID:-}
+        VITE_EMAILJS_TEMPLATE_ID: ${VITE_EMAILJS_TEMPLATE_ID:-}
+        VITE_CONTACT_TO_EMAIL: ${VITE_CONTACT_TO_EMAIL:-}
     image: ${FRONTEND_IMAGE_NAME:-rayesmodes-frontend}:${IMAGE_TAG:-latest}
     container_name: ${FRONTEND_CONTAINER:-rayesmodes-frontend}
     restart: unless-stopped

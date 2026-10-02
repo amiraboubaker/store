@@ -39,7 +39,7 @@ devops-scripts/
 ├── .env.example         shared settings (clone URL, branch, APP_DIR, DOMAIN)
 ├── lib/common.sh        helpers: secret generation, repo sync, health waits
 ├── backend/
-│   ├── deploy.sh        up | down | restart | logs | status | pull | shell
+│   ├── deploy.sh        up | down | restart | logs | status | pull | mail-test | shell
 │   ├── docker-compose.yml
 │   └── .env.example
 └── frontend/
@@ -124,6 +124,30 @@ Keep `backend/scripts/reset-database.js` in step with `backend/src/models/` and
 `backend/sql/create_tables.sql`; the three are redundant descriptions of the same
 schema, and disagreement between them is what produces a database that disagrees
 with the code.
+
+### When a contact submission produces no email
+
+Rows appear in `contacts` but no mail arrives. One command separates the four
+possible causes instead of guessing:
+
+```bash
+./backend/deploy.sh mail-test                  # uses EMAIL_TO
+./backend/deploy.sh mail-test other@box.com    # try a different recipient
+```
+
+It runs `backend/scripts/test-mail.js` inside the container with the same
+variables the API uses and reports, in order: whether every `EMAIL_*` value is
+present (and whether the password still contains spaces), DNS resolution of
+`EMAIL_HOST`, a TCP connect to `EMAIL_HOST:EMAIL_PORT`, SMTP authentication,
+and the actual send. It stops at the first failing step and prints a hint for the
+common cases: a rejected login means the app password is wrong, a TCP timeout
+means the VPS provider blocks outbound 587 (switch to `EMAIL_PORT=465`), and a
+`550` on send means `EMAIL_TO` does not exist or `EMAIL_FROM` is not an address
+the account is allowed to send as.
+
+Note that step 5 only proves the server accepted the message. Whether it is
+delivered is the mail provider's decision, so after it passes, check spam and
+the quarantine folder of `EMAIL_TO`.
 
 ## Using `docker compose` directly
 
@@ -211,12 +235,40 @@ After a `git pull`, run it again with `--build` to pick up code changes.
 | `DB_BIND_ADDRESS`  | stays `127.0.0.1`; never publish MySQL                     |
 | `EMAIL_*`, `STRIPE_SECRET_KEY` | optional, blank disables the feature        |
 
+`EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASSWORD` and `EMAIL_FROM`
+drive the contact form notifications; `EMAIL_TO` is the inbox that receives them
+and falls back to `EMAIL_FROM`. Verify them with
+`./backend/deploy.sh mail-test`.
+
 **`frontend/.env`**
 
 | Variable       | Why                                                             |
 | -------------- | ---------------------------------------------------------------- |
 | `VITE_API_URL` | public backend URL, e.g. `https://api.shop.tld` (needs a rebuild) |
 | `FRONTEND_PORT`| public port, default `80`                                        |
+| `VITE_EMAILJS_*`, `VITE_CONTACT_TO_EMAIL` | fallback notification channel (needs a rebuild) |
+
+### How a contact enquiry reaches the inbox
+
+Two channels, so a single outage cannot swallow an enquiry:
+
+1. **The API, by SMTP.** `POST /contact` stores the row and sends the
+   notification itself, then answers `data.emailSent`. Verify it with
+   `./backend/deploy.sh mail-test`.
+2. **The browser, by EmailJS.** When the API answers `emailSent: false`
+   (SMTP not configured, blocked, or credentials rejected), the contact page
+   sends the same message through EmailJS instead. This is why
+   `VITE_EMAILJS_PUBLIC_KEY`, `VITE_EMAILJS_SERVICE_ID` and
+   `VITE_EMAILJS_TEMPLATE_ID` must stay set in `frontend/.env`: without them
+   the enquiry is still stored, but nothing reaches the inbox.
+
+The fallback puts the name, email address and subject inside the body text
+itself, not only in the template's own `{{name}}` / `{{subject}}` placeholders,
+so the sender's details reach you even if the EmailJS template was never
+edited to display them.
+
+`POST /contact` answers `201` with `emailSent` in every case: a notification
+that cannot be delivered never fails the submission, and never loses it.
 
 ## Changing the frontend URL without a rebuild
 

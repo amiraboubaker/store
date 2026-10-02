@@ -99,6 +99,10 @@ describe('ContactController.create', () => {
             subject: 'Bulk order'
         }));
         expect(res.status).toHaveBeenCalledWith(201);
+        expect(res.json).toHaveBeenCalledWith({
+            status: 'success',
+            data: { id: 42, emailSent: true }
+        });
     });
 
     it('stores a missing subject as null', async () => {
@@ -118,5 +122,19 @@ describe('ContactController.create', () => {
 
         expect(created).toHaveLength(1);
         expect(res.status).toHaveBeenCalledWith(201);
+        expect(res.json).toHaveBeenCalledWith({
+            status: 'success',
+            data: { id: 42, emailSent: false }
+        });
+    });
+
+    it('tells the browser to retry when email is not configured at all', async () => {
+        const mailService = { sendContactNotification: jest.fn().mockResolvedValue({ skipped: true }) };
+        const { res } = await run(mailService);
+
+        expect(res.json).toHaveBeenCalledWith({
+            status: 'success',
+            data: { id: 42, emailSent: false }
+        });
     });
 });
