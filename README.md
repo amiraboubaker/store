@@ -43,6 +43,7 @@ root/
 │       ├── routes/        # API route definitions
 │       ├── models/        # Sequelize ORM models
 │       ├── services/      # Reusable business logic
+│       ├── views/emails/  # Contact form email templates (html + text)
 │       ├── middleware/    # Auth, validation, error handling
 │       ├── config/        # Configuration & env settings
 │       ├── utils/         # Helper functions

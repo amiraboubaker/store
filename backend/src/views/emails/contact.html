@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>New contact form message from {{name}}</title>
+  </head>
+  <body style="margin:0;padding:0;background:#f5f1ea;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f1ea;padding:24px 12px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="600" cellpadding="0" cellspacing="0"
+                 style="width:600px;max-width:100%;background:#ffffff;border:1px solid #e3dbd0;border-radius:6px;font-family:Georgia,'Times New Roman',serif;color:#2b2320;">
+            <tr>
+              <td style="padding:28px 32px 20px 32px;border-bottom:3px solid #2b2320;">
+                <p style="margin:0 0 6px 0;font-family:Helvetica,Arial,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8a7a68;">
+                  New enquiry
+                </p>
+                <h1 style="margin:0;font-size:22px;line-height:1.3;font-weight:normal;color:#2b2320;">
+                  Contact form message
+                </h1>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:24px 32px 8px 32px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:15px;line-height:1.6;">
+                  <tr>
+                    <td width="90" valign="top" style="padding:0 12px 12px 0;font-family:Helvetica,Arial,sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#8a7a68;">
+                      Name
+                    </td>
+                    <td valign="top" style="padding:0 0 12px 0;font-size:15px;color:#2b2320;">
+                      {{name}}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="90" valign="top" style="padding:0 12px 12px 0;font-family:Helvetica,Arial,sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#8a7a68;">
+                      Email
+                    </td>
+                    <td valign="top" style="padding:0 0 12px 0;font-size:15px;">
+                      <a href="mailto:{{email}}" style="color:#5c6f5a;text-decoration:underline;">{{email}}</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="90" valign="top" style="padding:0 12px 12px 0;font-family:Helvetica,Arial,sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#8a7a68;">
+                      Subject
+                    </td>
+                    <td valign="top" style="padding:0 0 12px 0;font-size:15px;color:#2b2320;">
+                      {{subject}}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td width="90" valign="top" style="padding:0 12px 12px 0;font-family:Helvetica,Arial,sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#8a7a68;">
+                      Received
+                    </td>
+                    <td valign="top" style="padding:0 0 12px 0;font-size:15px;color:#8a7a68;">
+                      {{date}}
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:12px 32px 8px 32px;">
+                <p style="margin:0 0 8px 0;font-family:Helvetica,Arial,sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#8a7a68;">
+                  Message
+                </p>
+                <div style="padding:16px 18px;background:#faf8f4;border-left:3px solid #7d8b7a;font-size:15px;line-height:1.7;color:#2b2320;white-space:normal;">
+                  {{message}}
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:20px 32px 28px 32px;">
+                <p style="margin:0 0 14px 0;font-size:14px;color:#2b2320;">
+                  Reply directly to this email to answer {{name}}.
+                </p>
+                <table role="presentation" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="background:#2b2320;">
+                      <a href="mailto:{{email}}?subject=Re%3A%20{{subjectUrl}}"
+                         style="display:inline-block;padding:12px 22px;font-family:Helvetica,Arial,sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#ffffff;text-decoration:none;">
+                        Reply to {{name}}
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+                <p style="margin:20px 0 0 0;font-size:12px;line-height:1.6;color:#8a7a68;">
+                  Saved as contact #{{reference}} in the store database.
+                  This address was filled in by the client, so do not reply to it if it looks unfamiliar.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

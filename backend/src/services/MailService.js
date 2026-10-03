@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const nodemailer = require('nodemailer');
 
 const escapeHtml = (value) =>
@@ -8,11 +10,30 @@ const escapeHtml = (value) =>
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
 
-const FIELD_LABELS = {
-    name: 'Name',
-    email: 'Email',
-    subject: 'Subject',
-    message: 'Message'
+const TEMPLATE_DIR = path.join(__dirname, '..', 'views', 'emails');
+const TEMPLATES = {};
+
+const FALLBACKS = {
+    'contact.txt': [
+        'NEW CONTACT FORM MESSAGE',
+        '',
+        'Reference: {{reference}}',
+        'Received:  {{date}}',
+        '',
+        'Name:     {{name}}',
+        'Email:    {{email}}',
+        'Subject:  {{subject}}',
+        '',
+        'Message:',
+        '--------',
+        '{{message}}'
+    ].join('\n'),
+    'contact.html': '<p><strong>Name:</strong> {{name}}<br>'
+        + '<strong>Email:</strong> {{email}}<br>'
+        + '<strong>Subject:</strong> {{subject}}</p>'
+        + '<p><strong>Message:</strong></p>'
+        + '<p>{{message}}</p>'
+        + '<hr><p><small>Saved as contact #{{reference}} on {{date}}.</small></p>'
 };
 
 class MailService {
@@ -41,6 +62,37 @@ class MailService {
         return Boolean(host && user && password && from && to);
     }
 
+    /**
+     * A Google App Password is always 16 characters with no spaces, and Gmail
+     * only issues one while 2-Step Verification is on. Reporting that shape up
+     * front turns "Invalid login: 535-5.7.8" from a dead end into an obvious fix.
+     */
+    describePassword() {
+        const { password } = this.getConfig();
+        return {
+            length: password.length,
+            hasWhitespace: /\s/.test(password),
+            isSixteenChars: password.replace(/\s/g, '').length === 16
+        };
+    }
+
+    getCredentialHints() {
+        const { host, password } = this.getConfig();
+        const hints = [];
+        const shape = this.describePassword();
+        if (/gmail\.com|googlemail\.com/i.test(host)) {
+            if (shape.hasWhitespace) {
+                hints.push('EMAIL_PASSWORD contains spaces: remove them, an App Password is 16 characters with no spaces.');
+            } else if (!shape.isSixteenChars) {
+                hints.push(`EMAIL_PASSWORD is ${shape.length} characters: a Google App Password is exactly 16, so this is not one.`);
+            }
+            hints.push('Gmail rejects the account password. Turn on 2-Step Verification, then create an App Password at myaccount.google.com > Security > 2-Step Verification > App passwords, and use EMAIL_USER = the address that owns it.');
+        } else if (shape.hasWhitespace) {
+            hints.push('EMAIL_PASSWORD contains spaces: remove them.');
+        }
+        return hints;
+    }
+
     getTransport() {
         const { host, port, user, password } = this.getConfig();
         if (!this.transporter) {
@@ -62,6 +114,33 @@ class MailService {
     }
 
     /**
+     * Reads a file from src/views/emails and substitutes {{placeholders}}.
+     * Deliberately not a template engine: the files are plain HTML and text, so
+     * a missing dependency would otherwise be a runtime failure. A file that
+     * cannot be read falls back to FALLBACKS, so a slimmed image can never stop
+     * the notification from carrying the client's details.
+     */
+    renderTemplate(file, replacements) {
+        const source = this.loadTemplate(file) || FALLBACKS[file];
+        return Object.entries(replacements).reduce(
+            (html, [key, value]) => html.split(`{{${key}}}`).join(value),
+            source
+        );
+    }
+
+    loadTemplate(file) {
+        if (!(file in TEMPLATES)) {
+            try {
+                TEMPLATES[file] = fs.readFileSync(path.join(TEMPLATE_DIR, file), 'utf8');
+            } catch (error) {
+                console.warn(`MailService: template ${file} not readable (${error.code || error.message}), using the built-in copy`);
+                TEMPLATES[file] = null;
+            }
+        }
+        return TEMPLATES[file];
+    }
+
+    /**
      * The notification repeats every submitted field, so the shop can answer
      * the client without opening the database. Reply-To points at the client
      * address, which mail clients turn into a one-click reply.
@@ -71,29 +150,40 @@ class MailService {
         const email = contact.email || '';
         const subject = (contact.subject || '').trim() || 'No subject';
         const message = contact.message || '';
-        const reference = contact.id ? `#${contact.id}` : 'n/a';
+        const received = contact.createdAt
+            ? new Date(contact.createdAt).toUTCString()
+            : new Date().toUTCString();
+        // The templates add the leading '#', so this stays a bare number.
+        const reference = contact.id ? String(contact.id) : 'n/a';
+        const { from, to } = this.getConfig();
+
+        // The HTML part carries the branding and the reply button; the text
+        // part is the fallback that stays readable in a plain text client.
+        const replacements = {
+            name: escapeHtml(name),
+            email: escapeHtml(email),
+            subject: escapeHtml(subject),
+            subjectUrl: encodeURIComponent(subject),
+            message: escapeHtml(message).replace(/\r?\n/g, '<br>'),
+            date: escapeHtml(received),
+            reference: escapeHtml(reference)
+        };
+        const textReplacements = {
+            name,
+            email,
+            subject,
+            message,
+            date: received,
+            reference
+        };
 
         return {
-            from: this.getConfig().from,
-            to: this.getConfig().to,
+            from,
+            to,
             replyTo: email,
             subject: `New contact form message from ${name} — ${subject}`,
-            text: [
-                `Reference: ${reference}`,
-                '',
-                `${FIELD_LABELS.name}: ${name}`,
-                `${FIELD_LABELS.email}: ${email}`,
-                `${FIELD_LABELS.subject}: ${subject}`,
-                '',
-                `${FIELD_LABELS.message}:`,
-                message
-            ].join('\n'),
-            html: `<p><strong>${escapeHtml(FIELD_LABELS.name)}:</strong> ${escapeHtml(name)}<br>`
-                + `<strong>${escapeHtml(FIELD_LABELS.email)}:</strong> ${escapeHtml(email)}<br>`
-                + `<strong>${escapeHtml(FIELD_LABELS.subject)}:</strong> ${escapeHtml(subject)}</p>`
-                + `<p><strong>${escapeHtml(FIELD_LABELS.message)}:</strong></p>`
-                + `<p>${escapeHtml(message).replace(/\r?\n/g, '<br>')}</p>`
-                + `<hr><p><small>Stored as contact #${escapeHtml(reference)}</small></p>`
+            text: this.renderTemplate('contact.txt', textReplacements),
+            html: this.renderTemplate('contact.html', replacements)
         };
     }
 
@@ -106,7 +196,16 @@ class MailService {
             console.warn('MailService: EMAIL_* is not configured, contact notification skipped');
             return { skipped: true };
         }
-        return this.getTransport().sendMail(this.buildContactMessage(contact));
+        try {
+            return await this.getTransport().sendMail(this.buildContactMessage(contact));
+        } catch (error) {
+            const rejected = String((error && error.message) || '').includes('535')
+                || (error && error.code === 'EAUTH');
+            if (rejected) {
+                for (const hint of this.getCredentialHints()) console.warn(`MailService: ${hint}`);
+            }
+            throw error;
+        }
     }
 }
 

@@ -1,0 +1,18 @@
+NEW CONTACT FORM MESSAGE
+========================
+
+Reference: contact #{{reference}}
+Received:  {{date}}
+
+Name:     {{name}}
+Email:    {{email}}
+Subject:  {{subject}}
+
+Message:
+--------
+{{message}}
+
+--
+Reply directly to this email to answer {{name}}.
+Saved as contact #{{reference}} in the store database.
+This address was filled in by the client, so do not reply if it looks unfamiliar.
