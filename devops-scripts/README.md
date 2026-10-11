@@ -278,11 +278,28 @@ keep the API on a stable hostname.
 
 ## Putting a domain in front
 
-The frontend container publishes port `80` directly, so the simplest setup is
-pointing an `A` record at the VPS. If you need TLS, terminate it in a reverse
-proxy (Caddy or nginx) on the host and proxy to `127.0.0.1:80` / `:5000`, then
-set `FRONTEND_BIND_ADDRESS=127.0.0.1` and add the `https://` origins to
-`CORS_ORIGIN` in `backend/.env`.
+The frontend container publishes `FRONTEND_PORT` (default `80`) directly, so the
+simplest setup is pointing an `A` record at the VPS. If you need TLS, terminate it
+in a reverse proxy (Caddy or nginx) on the host and proxy to `127.0.0.1:3001`
+(frontend) / `127.0.0.1:5000` (backend API) / `127.0.0.1:8081` (phpMyAdmin), then
+set `FRONTEND_BIND_ADDRESS=127.0.0.1` on both stacks and add the `https://` origins
+to `CORS_ORIGIN` in `backend/.env`.
+
+An example nginx configuration for `rayesmodes.tn` / `api.rayesmodes.tn` /
+`db.rayesmodes.tn` is included at `nginx/rayesmodes.conf`. On the VPS:
+
+```bash
+sudo apt install -y nginx
+sudo cp devops-scripts/nginx/rayesmodes.conf /etc/nginx/sites-available/rayesmodes
+sudo ln -s /etc/nginx/sites-available/rayesmodes /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t && sudo systemctl reload nginx
+
+# request TLS certs for all three domains
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d rayesmodes.tn -d www.rayesmodes.tn \
+                      -d api.rayesmodes.tn -d db.rayesmodes.tn
+```
 
 ## Database
 
@@ -302,9 +319,9 @@ docker exec store-mysql sh -c 'mysqldump -u root -p"$MYSQL_ROOT_PASSWORD" --all-
 ## Security notes
 
 - MySQL, the API and phpMyAdmin bind to `127.0.0.1`; they are reached through a
-  reverse proxy that terminates TLS for `app.`, `api.` and `db.`. Without a
-  proxy, set `BACKEND_BIND_ADDRESS` / `PHPADMIN_BIND_ADDRESS` to `0.0.0.0` to
-  reach them directly on their ports.
+  reverse proxy that terminates TLS for `rayesmodes.tn`, `api.rayesmodes.tn` and
+  `db.rayesmodes.tn`. Without a proxy, set `BACKEND_BIND_ADDRESS` /
+  `PHPADMIN_BIND_ADDRESS` to `0.0.0.0` to reach them directly on their ports.
 - MySQL itself speaks its own protocol on 3306 and is never served over HTTP.
   The `db.` hostname publishes phpMyAdmin, the browser UI for that database.
   Native clients connect over `ssh -L 3306:127.0.0.1:3306`.
