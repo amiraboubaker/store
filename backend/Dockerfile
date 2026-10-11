@@ -3,12 +3,12 @@
 # ---------------------------------------------------------------------------
 # Stage 1: install production dependencies
 # ---------------------------------------------------------------------------
-FROM node:20-bookworm-slim AS deps
+FROM node:20.18-bookworm-slim AS deps
 
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+RUN npm ci --omit=dev --unsafe-perm && npm cache clean --force
 
 # ---------------------------------------------------------------------------
 # Stage 2: runtime

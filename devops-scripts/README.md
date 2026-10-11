@@ -212,6 +212,30 @@ docker compose down --volumes     # stop and delete the database
 `../../frontend/Dockerfile`, so it must be run from inside the repository.
 After a `git pull`, run it again with `--build` to pick up code changes.
 
+## Troubleshooting
+
+### `npm ci` fails during Docker build
+
+`npm ci` exits with code 1 inside `node:20-bookworm-slim`. Debug by running the
+build directly so you see the full npm output (deploy.sh truncates it):
+
+```bash
+cd devops-scripts/backend
+docker compose --env-file .env --project-directory . build backend 2>&1 | tail -40
+```
+
+Common causes and checks:
+
+- **Network**: verify the VPS can reach the npm registry:
+  ```bash
+  curl -sI https://registry.npmjs.org/ | head -1
+  ```
+- **Architecture**: `npm ci` runs purely for JavaScript packages here, so ARM vs
+  x86 should not matter. Confirm with `docker info | grep Architecture`.
+- **Lockfile drift**: if `package.json` was edited but `package-lock.json` was
+  not regenerated, run `npm install` locally and commit the updated lockfile,
+  then redeploy with `./deploy.sh pull`.
+
 ## How `up` works
 
 1. Creates `.env` from `.env.example` on the first run and replaces every
