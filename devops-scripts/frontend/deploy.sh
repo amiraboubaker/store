@@ -29,14 +29,18 @@ EXTRA_ARGS=("$@")
 ensure_executable "$STACK_DIR/.."
 
 load_env "$DEVOPS_ROOT/.env" "$STACK_DIR/.env"
-APP_DIR="${APP_DIR:-/opt/store}"
+APP_DIR="${APP_DIR:-/home/ubuntu/store}"
 REPO_URL="${REPO_URL:-}"
 REPO_BRANCH="${REPO_BRANCH:-main}"
 
 public_url() {
-    if [ -n "${DOMAIN:-}" ]; then
-        printf 'http://%s' "$DOMAIN"
-        [ "${FRONTEND_PORT:-80}" = "80" ] || printf ':%s' "${FRONTEND_PORT:-80}"
+    # The frontend is served via https://$FRONTEND_DOMAIN through the host nginx
+    # reverse proxy. When the domain is set, print the https URL; otherwise fall
+    # back to the server IP.
+    if [ -n "${FRONTEND_DOMAIN:-}" ]; then
+        printf 'https://%s' "$FRONTEND_DOMAIN"
+    elif [ -n "${DOMAIN:-}" ]; then
+        printf 'https://%s' "$DOMAIN"
     else
         local ip
         ip="$(curl -fsS --max-time 3 https://api.ipify.org 2>/dev/null || hostname -I 2>/dev/null | awk '{print $1}')"
@@ -55,6 +59,10 @@ print_status() {
         warn "VITE_API_URL still points at localhost - browser calls will fail."
         warn "Set it to the public backend URL, then run: ./deploy.sh pull"
     fi
+    if [ -z "${FRONTEND_DOMAIN:-}" ]; then
+        warn "FRONTEND_DOMAIN is not set in .env - the frontend will not be reachable via its own domain."
+        warn "Set FRONTEND_DOMAIN=rayesmodes.tn and (re)run: ./deploy.sh proxy"
+    fi
 }
 
 case "$COMMAND" in
@@ -62,7 +70,7 @@ case "$COMMAND" in
         require_docker
         ensure_env_file "$STACK_DIR" "$STACK_DIR/.env.example"
         load_env "$STACK_DIR/.env"
-        APP_DIR="${APP_DIR:-/opt/store}"
+        APP_DIR="${APP_DIR:-/home/ubuntu/store}"
         head_ "1/4 syncing repository"
         sync_repo "$APP_DIR" "$REPO_URL" "$REPO_BRANCH"
         head_ "2/4 preparing docker network"

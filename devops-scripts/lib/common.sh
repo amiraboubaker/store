@@ -114,7 +114,8 @@ ensure_executable() {
     local f
     for f in devops-scripts/deploy.sh \
              devops-scripts/backend/deploy.sh \
-             devops-scripts/frontend/deploy.sh; do
+             devops-scripts/frontend/deploy.sh \
+             devops-scripts/nginx/setup-nginx.sh; do
         [ -f "$1/$f" ] && chmod +x "$1/$f" 2>/dev/null || true
     done
 }
@@ -159,8 +160,8 @@ sync_repo() {
         log "cloning $repo_url -> $app_dir"
         if ! git ls-remote --exit-code --heads "$repo_url" "$branch" >/dev/null 2>&1; then
             die "branch '$branch' does not exist on $repo_url.
-     Check REPO_BRANCH in $DEVOPS_ROOT/.env against the branches on the remote:
-       git ls-remote --heads $repo_url"
+ Check REPO_BRANCH in $DEVOPS_ROOT/.env against the branches on the remote:
+   git ls-remote --heads $repo_url"
         fi
         mkdir -p "$(dirname "$app_dir")"
         git clone --branch "$branch" --depth 1 "$repo_url" "$app_dir"

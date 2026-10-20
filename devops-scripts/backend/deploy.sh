@@ -28,13 +28,18 @@ EXTRA_ARGS=("$@")
 ensure_executable "$STACK_DIR/.."
 
 load_env "$DEVOPS_ROOT/.env" "$STACK_DIR/.env"
-APP_DIR="${APP_DIR:-/opt/store}"
+APP_DIR="${APP_DIR:-/home/ubuntu/store}"
 REPO_URL="${REPO_URL:-}"
 REPO_BRANCH="${REPO_BRANCH:-main}"
 
+# The backend API is served publicly via https://$API_DOMAIN through the host
+# nginx reverse proxy. phpMyAdmin is served via https://$DB_DOMAIN.
+# public_url <bind> <port> <scheme> [domain] - builds the correct public URL.
 public_url() {
-    local host="$1" port="$2" scheme="$3"
-    if [ -n "${DOMAIN:-}" ]; then
+    local bind="$1" port="$2" scheme="$3" domain="${4:-}"
+    if [ -n "$domain" ]; then
+        printf '%s://%s' "$scheme" "$domain"
+    elif [ -n "${DOMAIN:-}" ]; then
         printf '%s://%s' "$scheme" "$DOMAIN"
         [ "$port" = "80" ] || printf ':%s' "$port"
     else
@@ -46,8 +51,8 @@ public_url() {
 
 print_status() {
     local backend_url phpmyadmin_url
-    backend_url="$(public_url "${BACKEND_BIND_ADDRESS:-0.0.0.0}" "${BACKEND_PORT:-5000}" http)"
-    phpmyadmin_url="$(public_url "${PHPADMIN_BIND_ADDRESS:-0.0.0.0}" "${PHPADMIN_PORT:-8081}" http)"
+    backend_url="$(public_url "${BACKEND_BIND_ADDRESS:-0.0.0.0}" "${BACKEND_PORT:-5000}" https "${API_DOMAIN:-}")"
+    phpmyadmin_url="$(public_url "${PHPADMIN_BIND_ADDRESS:-0.0.0.0}" "${PHPADMIN_PORT:-8081}" https "${DB_DOMAIN:-}")"
     head_ "Backend stack status"
     compose "$STACK_DIR" ps
     head_ "Reachable endpoints"
@@ -63,6 +68,10 @@ print_status() {
         warn "CORS_ORIGIN still lists localhost: $CORS_ORIGIN"
         warn "Replace it with this server's real frontend origin or the browser will refuse API calls."
     fi
+    if [ -z "${API_DOMAIN:-}" ]; then
+        warn "API_DOMAIN is not set in .env - the API will not be reachable via its own domain."
+        warn "Set API_DOMAIN=api.rayesmodes.tn in .env, then run: ./deploy.sh proxy"
+    fi
 }
 
 case "$COMMAND" in
@@ -70,7 +79,7 @@ case "$COMMAND" in
         require_docker
         ensure_env_file "$STACK_DIR" "$STACK_DIR/.env.example"
         load_env "$STACK_DIR/.env"
-        APP_DIR="${APP_DIR:-/opt/store}"
+        APP_DIR="${APP_DIR:-/home/ubuntu/store}"
         head_ "1/4 syncing repository"
         sync_repo "$APP_DIR" "$REPO_URL" "$REPO_BRANCH"
         head_ "2/4 preparing docker network"
@@ -123,6 +132,9 @@ case "$COMMAND" in
         compose "$STACK_DIR" up -d --force-recreate --remove-orphans
         wait_healthy "${BACKEND_CONTAINER:-rayesmodes-backend}" 180 || true
         print_status
+        # Also rebuild the frontend since VITE_API_URL may have changed
+        log "rebuilding frontend image (VITE_API_URL may have changed)"
+        bash "$STACK_DIR/../frontend/deploy.sh" pull
         ;;
 
     shell)
