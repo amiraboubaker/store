@@ -73,6 +73,7 @@ case "$COMMAND" in
         APP_DIR="${APP_DIR:-/home/ubuntu/store}"
         head_ "1/4 syncing repository"
         sync_repo "$APP_DIR" "$REPO_URL" "$REPO_BRANCH"
+        deploy_env_files "$DEVOPS_ROOT" "$APP_DIR"
         head_ "2/4 preparing docker network"
         ensure_network "${STORE_NETWORK:-store-net}"
         head_ "3/4 building the bundle and starting nginx"
@@ -116,6 +117,7 @@ case "$COMMAND" in
         ensure_env_file "$STACK_DIR" "$STACK_DIR/.env.example"
         load_env "$STACK_DIR/.env"
         sync_repo "$APP_DIR" "$REPO_URL" "$REPO_BRANCH"
+        deploy_env_files "$DEVOPS_ROOT" "$APP_DIR"
         ensure_network "${STORE_NETWORK:-store-net}"
         log "rebuilding the frontend image (VITE_* are baked in at build time)"
         compose "$STACK_DIR" build --pull frontend

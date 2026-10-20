@@ -170,6 +170,27 @@ sync_repo() {
     ok "repository in sync ($(git -C "$app_dir" rev-parse --short HEAD))"
 }
 
+# --- env deployment -----------------------------------------------------------
+# deploy_env_files <src_devops_dir> <app_dir>
+# Copies the per-stack .env files from the deploy scripts directory (the
+# temporary clone the operator works from) into the cloned APP_DIR so that
+# `docker compose` can be run directly from $APP_DIR/devops-scripts/<stack>.
+# Existing .env files in APP_DIR are preserved (user edits are not overwritten);
+# on first deploy APP_DIR has none, so they are copied from the temp clone.
+deploy_env_files() {
+    local src_dir="$1" app_dir="$2" f target_dir target_file
+    for f in ".env" "backend/.env" "frontend/.env"; do
+        target_dir="$app_dir/devops-scripts/$(dirname "$f")"
+        target_file="$target_dir/$(basename "$f")"
+        if [ -f "$src_dir/$f" ] && [ ! -f "$target_file" ]; then
+            mkdir -p "$target_dir"
+            cp "$src_dir/$f" "$target_file"
+            chmod 600 "$target_file"
+            ok "deployed $f to $app_dir/devops-scripts/$f"
+        fi
+    done
+}
+
 # --- docker helpers ----------------------------------------------------------
 ensure_network() {
     local name="$1"
